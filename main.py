@@ -4,9 +4,10 @@ import time
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
-from src.combine_videos import concatenate_videos
-from src.record_html import record_mp4_task
-from src.store_metadata import store_metadata
+from src.audio_generation.generate_audio import generate_audio
+from src.video_generation.combine_videos import concatenate_videos
+from src.video_generation.record_html import record_mp4_task
+from src.video_generation.store_metadata import store_metadata
 
 # Step 1: Read CSV Data
 csv_file = os.path.join('samples', 'comments.csv')  # Path to your CSV file
@@ -18,7 +19,7 @@ print(data)
 
 # Setup the Jinja2 environment
 env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template('src/template.html')
+template = env.get_template('src/html_generation/template.html')
 
 # Create a directory with the current timestamp
 timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -27,16 +28,8 @@ os.makedirs(output_dir, exist_ok=True)
 
 combined_mp4 = os.path.join(output_dir, f'output.mp4')
 
-# Assuming data is a DataFrame and template is a Jinja2 Template object
-# with concurrent.futures.ThreadPoolExecutor() as executor:
-#     futures = []
-#     for index, row in data.iterrows():
-#         futures.append(executor.submit(record_mp4_task, index, row, template, output_dir))
-
-#     # Wait for all futures to complete
-#     concurrent.futures.wait(futures)
-
 for index, row in data.iterrows():
+    generate_audio(row['comment'], 'en', f'{output_dir}/comment_{index}.mp3')
     record_mp4_task(index, row, template, output_dir)
 
 store_metadata(output_dir)
