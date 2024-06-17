@@ -63,11 +63,10 @@ def copy_files_by_list(file_list, target_dir, prefix=""):
             print(f"File {file_name} does not exist in the current directory")
 
 
-def record_mp4_task(index, row, template, output_dir):
+def record_mp4_task(index, row, output_dir, version):
     """
     :param index: The unique identifier for the task.
     :param row: The row of data containing the task details.
-    :param template: The template used to render the HTML content.
     :param output_dir: The directory where the output files will be saved.
     :return: None
 
@@ -92,9 +91,8 @@ def record_mp4_task(index, row, template, output_dir):
     mp4_file = os.path.join(output_dir, f'comment_{index}.mp4')
     with_audio_mp4_file = os.path.join(output_dir, f'comment_{index}_with_audio.mp4')
     mp3_file = os.path.join(output_dir, f'comment_{index}.mp3')
-    # copy_files_by_list([f'comment_{index}.mp3'], output_dir, 'samples')
 
-    generate_html(row, template, html_file)
+    generate_html(row, html_file, version)
 
     print(f"Processing {html_file} to {mp4_file}")
     record_mp4(html_file, mp4_file, get_mp3_length(mp3_file))

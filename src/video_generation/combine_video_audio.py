@@ -5,13 +5,18 @@ from moviepy.editor import VideoFileClip, AudioFileClip
 
 def combine_video_audio(input_video, input_audio, output_video):
     """
-    Combine a video clip and an audio clip into a single video file.
+    Combine the video and audio files into a single video file.
 
-    :param input_video: Path to the input video file.
-    :param input_audio: Path to the input audio file.
-    :param output_video: Path to the output video file.
-    :raises ValueError: If either input_video or input_audio is not a valid file path.
+    :param input_video: The path to the input video file.
+    :type input_video: str
+    :param input_audio: The path to the input audio file.
+    :type input_audio: str
+    :param output_video: The path to save the output video file.
+    :type output_video: str
     :return: None
+
+    :raises ValueError: if input_video or input_audio is not a valid file path
+
     """
     # Ensure input paths are strings and files exist
     if not isinstance(input_video, str) or not os.path.isfile(input_video):

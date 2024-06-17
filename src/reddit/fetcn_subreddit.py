@@ -14,11 +14,12 @@ reddit = praw.Reddit(client_id=client_id,
 
 def get_top_comments_from_post(url, limit=30):
     """
-    Retrieve the top comments from a post.
+    Get the top comments from a post.
 
     :param url: The URL of the post.
-    :param limit: The maximum number of comments to retrieve.
-    :return: A list of Comment objects representing the top comments.
+    :param limit: The maximum number of comments to retrieve (default: 30).
+
+    :return: A list of top comments, sorted by score (number of votes).
     """
     submission = reddit.submission(url=url)
     submission.comments.replace_more(limit=0)  # Remove "load more comments" instances
@@ -33,11 +34,14 @@ def get_top_comments_from_post(url, limit=30):
 
 def extract_comment_data(comment, indent=0):
     """
-    Extracts data from a Reddit comment and its subcomments.
+    Extracts data from a comment and its subcomments recursively.
 
     :param comment: The comment to extract data from.
+    :type comment: praw.models.Comment
     :param indent: The indentation level of the comment.
-    :return: A list of dictionaries containing the extracted data.
+    :type indent: int
+    :return: A list of dictionaries with the extracted comment data.
+    :rtype: list[dict]
     """
     comments_data = []
     comments_data.append({
@@ -55,10 +59,10 @@ def extract_comment_data(comment, indent=0):
 
 def fetch_subreddit(post_url, limit):
     """
-    Fetches the top comments from a given post URL and writes the data to a CSV file.
+    Fetches the top comments from a given post URL and writes them to output.csv.
 
-    :param post_url: The URL of the post.
-    :param limit: The maximum number of comments to fetch.
+    :param post_url: The URL of the post to fetch comments from.
+    :param limit: The number of top comments to fetch.
     :return: None
     """
     comments = get_top_comments_from_post(post_url, limit)

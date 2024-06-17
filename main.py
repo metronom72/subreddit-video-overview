@@ -19,7 +19,8 @@ print(data)
 
 # Setup the Jinja2 environment
 env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template('src/html_generation/template.html')
+
+version = 'v2'
 
 # Create a directory with the current timestamp
 timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -30,7 +31,7 @@ combined_mp4 = os.path.join(output_dir, f'output.mp4')
 
 for index, row in data.iterrows():
     generate_audio(row['comment'], 'en', f'{output_dir}/comment_{index}.mp3')
-    record_mp4_task(index, row, template, output_dir)
+    record_mp4_task(index, row, output_dir, version)
 
 store_metadata(output_dir)
 

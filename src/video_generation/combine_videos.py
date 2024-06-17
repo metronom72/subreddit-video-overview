@@ -4,10 +4,10 @@ import subprocess
 
 def create_file_list(directory, file_list_path):
     """
-    Creates a list of files in the given directory that have names ending with 'with_audio.mp4'.
+    Create a file list of files with audio in a given directory.
 
-    :param directory: The directory in which the files are located.
-    :param file_list_path: The path to the file list that will be created.
+    :param directory: The directory to search for files.
+    :param file_list_path: The path to the output file list.
     :return: None
     """
     with open(file_list_path, 'w') as file_list:
@@ -18,17 +18,19 @@ def create_file_list(directory, file_list_path):
 
 def concatenate_videos(directory, output_file):
     """
-    :param directory: The directory containing the videos to concatenate.
-    :param output_file: The path and filename of the output concatenated video file.
+    :param directory: The directory containing the videos to be concatenated.
+    :param output_file: The path to the output file where the concatenated video will be saved.
     :return: None
 
-    This method concatenates multiple videos located in the specified directory into a single video file. It uses FFmpeg to perform the concatenation with re-encoding to avoid any potential issues. The resulting video file will be saved at the specified output_file path.
+    This method concatenates multiple videos stored in the specified directory into a single video file. It uses FFmpeg to perform the concatenation with re-encoding to prevent any potential issues.
 
-    The method first creates a file_list.txt file in the directory to list the paths of the videos in the desired order of concatenation. It then builds an FFmpeg command with the necessary parameters to perform the concatenation, specifying the desired video and audio codecs, bitrates, and other settings.
+    First, a file list is created in the specified directory by calling the `create_file_list` method. This file list is used as an input to FFmpeg to indicate the order of videos to concatenate.
 
-    If the FFmpeg command executes successfully, it prints a success message indicating the output file location. If an error occurs during the concatenation process, it prints an error message. Finally, the method removes the temporary file_list.txt file after concatenation.
+    The FFmpeg command is constructed with the necessary parameters for concatenation, video encoding, audio encoding, and output file path. The command is then executed using the `subprocess.run` method.
 
-    Note: This method requires FFmpeg to be installed and available in the system's PATH.
+    If the concatenation is successful, a success message is printed to the console with the path to the output file. If an error occurs during concatenation, an error message is printed instead.
+
+    After the concatenation, the file list is optionally removed using `os.remove`. This step can be skipped if you want to keep the file list for reference.
     """
     file_list_path = os.path.join(directory, 'file_list.txt')
     create_file_list(directory, file_list_path)
