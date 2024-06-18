@@ -1,3 +1,6 @@
+import os
+from urllib.parse import urlparse
+
 import praw
 import csv
 
@@ -59,7 +62,8 @@ def extract_comment_data(comment, indent=0):
 
 def fetch_subreddit(post_url, limit):
     """
-    Fetches the top comments from a given post URL and writes them to output.csv.
+    Fetches the top comments from a given post URL and writes them to a user-specified CSV file.
+    The default output file name is based on the last path segment of the post URL.
 
     :param post_url: The URL of the post to fetch comments from.
     :param limit: The number of top comments to fetch.
@@ -71,8 +75,18 @@ def fetch_subreddit(post_url, limit):
     for comment in comments:
         comments_data.extend(extract_comment_data(comment))
 
+    # Extract the last path segment from the URL and use it as the default file name
+    parsed_url = urlparse(post_url)
+    path_segments = parsed_url.path.split('/')
+    default_file_name = path_segments[-2] + '.csv' if path_segments[-1] == '' else path_segments[-1] + '.csv'
+
+    # Prompt user for the output file name with a default value
+    output_file = input(f"Enter the name for the output CSV file (default: {default_file_name}): ")
+    if not output_file:
+        output_file = f'samples/{default_file_name}'
+
     # Write data to CSV
-    with open('output.csv', 'w', newline='') as csvfile:
+    with open(output_file, 'w', newline='') as csvfile:
         fieldnames = ['author', 'votes', 'comment', 'indent']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -80,4 +94,5 @@ def fetch_subreddit(post_url, limit):
         for data in comments_data:
             writer.writerow(data)
 
-    print(f"Top {limit} comments from the post have been written to output.csv.")
+    print(f"Top {limit} comments from the post have been written to {output_file}.")
+

@@ -2,8 +2,10 @@ import os
 import time
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
-
+from concurrent.futures import ThreadPoolExecutor
 from src.audio_generation.generate_audio import generate_audio
+from src.reddit.fetcn_subreddit import fetch_subreddit
+from src.video_generation.combine_video_audio import combine_video_audio
 from src.video_generation.combine_videos import concatenate_videos
 from src.video_generation.record_html import record_mp4_task
 from src.video_generation.store_metadata import store_metadata
@@ -19,14 +21,28 @@ def list_folders(directory):
     return [f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))]
 
 
-def main():
-    # Step 1: List CSV files in the samples directory
-    samples_dir = 'samples'
-    if not os.path.exists(samples_dir):
-        print(f"The directory '{samples_dir}' does not exist.")
-        return
+def combine_video_audio_task(index, row, output_dir):
+    mp3_file = os.path.join(output_dir, f'comment_{index}.mp3')
+    mp4_file = os.path.join(output_dir, f'comment_{index}.mp4')
+    with_audio_mp4_file = os.path.join(output_dir, f'comment_{index}_with_audio.mp4')
 
+    # Check if the corresponding MP3 file exists
+    if os.path.exists(mp3_file):
+        combine_video_audio(mp4_file, mp3_file, with_audio_mp4_file)
+
+
+def main():
+    # Step 1: Prompt for Reddit post URL and comment limit
+    post_url = input('Enter the Reddit post URL: ')
+    limit = int(input('Enter the number of top comments to fetch: '))
+
+    # Fetch top comments from the subreddit post
+    fetch_subreddit(post_url, limit)
+
+    # Step 2: List CSV files in the samples directory
+    samples_dir = 'samples'
     csv_files = list_csv_files(samples_dir)
+
     if not csv_files:
         print("No CSV files found in the samples directory.")
         return
@@ -56,13 +72,10 @@ def main():
     # Setup the Jinja2 environment
     env = Environment(loader=FileSystemLoader('.'))
 
-    # Step 2: List available versions (folders) in the templates directory
+    # Step 3: List available versions (folders) in the templates directory
     templates_dir = 'src/html_generation/templates'
-    if not os.path.exists(templates_dir):
-        print(f"The directory '{templates_dir}' does not exist.")
-        return
-
     version_options = list_folders(templates_dir)
+
     if not version_options:
         print("No versions found in the templates directory.")
         return
@@ -87,13 +100,18 @@ def main():
         generate_audio(row['comment'], 'en', f'{output_dir}/comment_{index}.mp3')
         record_mp4_task(index, row, output_dir, version)
 
+    # Combine video and audio files in parallel
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(combine_video_audio_task, index, row, output_dir) for index, row in data.iterrows()]
+        for future in futures:
+            future.result()  # Wait for all futures to complete
+
     store_metadata(output_dir)
 
     # Concatenate all the MP4 files into one
     concatenate_videos(os.path.join(output_dir), combined_mp4)
 
     print(f"Images and video saved in {output_dir}")
-
 
 if __name__ == "__main__":
     main()

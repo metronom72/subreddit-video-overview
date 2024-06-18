@@ -89,18 +89,12 @@ def record_mp4_task(index, row, output_dir, version):
     """
     html_file = os.path.join(output_dir, f'comment_{index}.html')
     mp4_file = os.path.join(output_dir, f'comment_{index}.mp4')
-    with_audio_mp4_file = os.path.join(output_dir, f'comment_{index}_with_audio.mp4')
     mp3_file = os.path.join(output_dir, f'comment_{index}.mp3')
 
     generate_html(row, html_file, version)
 
     print(f"Processing {html_file} to {mp4_file}")
     record_mp4(html_file, mp4_file, get_mp3_length(mp3_file))
-
-    # Check if the corresponding MP3 file exists
-    if os.path.exists(mp3_file):
-        # adjust_video_length(mp4_file, adjusted_mp4_file, get_mp3_length(mp3_file))
-        combine_video_audio(mp4_file, mp3_file, with_audio_mp4_file)
 
 
 def get_window_id(window_name):
