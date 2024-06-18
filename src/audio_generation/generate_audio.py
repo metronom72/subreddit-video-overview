@@ -36,4 +36,3 @@ def generate_audio(text, language='en', filename='output.mp3'):
     finally:
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
-            

@@ -24,6 +24,7 @@ body {
     align-items: flex-start;
     border-bottom: 1px solid #ddd;
     padding: 15px 0;
+    position: relative;
 }
 .comment:last-child {
     border-bottom: none;
@@ -34,6 +35,15 @@ body {
     border-radius: 50%;
     margin-right: 15px;
     background-color: gray;
+}
+.gray-line {
+    position: absolute;
+    top: 60px;
+    bottom: 15px;
+    left: 19px;
+    width: 2px;
+    background-color: gray;
+    z-index: 0;
 }
 .comment-content {
     flex-grow: 1;
@@ -46,6 +56,15 @@ body {
 .author a {
     text-decoration: none;
     color: #000;
+}
+.author-info {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #888;
+}
+.date {
+    margin-left: 5px;
 }
 .comment-text {
     margin: 5px 0;
@@ -74,5 +93,5 @@ body {
 }
 .visible {
     opacity: 1;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease;
 }

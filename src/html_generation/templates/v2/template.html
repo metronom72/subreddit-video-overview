@@ -13,10 +13,14 @@
 <body>
     <div class="comment-section">
         <div class="comment">
+            <div class="gray-line"></div>
             <div class="author-image"></div>
             <div class="comment-content">
-                <div class="author">
-                    <a href="#">{{ author }}</a>
+                <div class="author-info">
+                  <div class="author">
+                      <a href="#">{{ author }}</a>
+                  </div>
+                  <span class="date">12 days ago</span>
                 </div>
                 <div class="comment-text" id="comment1">{{ comment }}</div>
                 <div class="comment-actions">
@@ -38,64 +42,10 @@
         </div>
         <!-- Add more comments as needed -->
     </div>
-    <script>
-        function getDurationFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return parseInt(urlParams.get('duration'), 10) || 10000; // Default to 5000ms if no duration specified
-        }
-
-        function animateText(element) {
-            const text = element.innerHTML;
-            const words = text.split(' ');
-            element.innerHTML = '';
-
-            const totalDuration = getDurationFromUrl();
-            const totalLength = words.reduce((sum, word) => sum + (word.match(/[a-z0-9]/gi)?.length || 1), 0);
-            const baseDelay = totalDuration / totalLength;
-            console.log(totalLength)
-
-            let delayAccumulator = 0;
-
-            words.forEach((word, index) => {
-                const span = document.createElement('span');
-                span.innerHTML = word + ' ';
-                span.classList.add('hidden');
-                element.appendChild(span);
-
-                const wordLength = word.match(/[a-z0-9]/gi)?.length || 1;
-                const delay = wordLength * baseDelay;
-                console.log(delay, delayAccumulator, word, index)
-                delayAccumulator += delay;
-
-                setTimeout(() => {
-                    span.classList.add('visible');
-                    if (index === words.length - 1) {
-                        setTimeout(() => {
-                            const body = document.querySelector('body');
-                            body.setAttribute('data-rendering-over', true);
-                        }, 2000);
-
-                        setTimeout(() => {
-                            const element = document.body;
-                            element.style.cssText = 'opacity: 0;';
-                        }, 750);
-                    }
-                }, delayAccumulator - delay); // Adjust the delay as needed
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const commentText = document.getElementById('comment1');
-                commentText.style.cssText = 'opacity: 1;'
-                animateText(commentText);
-            }, 1000)
-
-            setTimeout(() => {
-                const element = document.body;
-                element.style.cssText = 'opacity: 1;'
-            }, 1000)
-        });
-    </script>
+    {% if js_content %}
+        <script>
+            {{ js_content }}
+        </script>
+    {% endif %}
 </body>
 </html>
