@@ -1,9 +1,22 @@
 import os
+import re
 import time
 import json
 from jinja2 import Template
 import pandas as pd
 
+
+def split_by_newlines(text):
+    """
+    Splits the input string by any amount of new lines.
+
+    Args:
+        text (str): The input string to be split.
+
+    Returns:
+        list: A list of substrings split by one or more new lines.
+    """
+    return re.split(r'\n+', text.replace('\r', '').strip())
 
 def read_file(file_path):
     """Read the content of a file and return its content and size."""
@@ -37,10 +50,11 @@ def render_html(row, template_content, css_content, js_content):
     """Render the HTML content using the provided template and additional content."""
     start_time = time.time()
     template = Template(template_content)
+    comment = row['comment']
     html_content = template.render(
         author=row['author'],
         votes=row['votes'],
-        comment=row['comment'],
+        comment=json.dumps(comment),
         css_content=css_content,
         js_content=js_content
     )
@@ -59,6 +73,8 @@ def write_output_file(output_file, content):
 
 
 def generate_html(row, output_file, version='v1'):
+    split_comments = version not in ['v1', 'v2']
+
     template_file = f'src/html_generation/templates/{version}/template.html'
     css_file = f'src/html_generation/templates/{version}/style.css'
     js_file = f'src/html_generation/templates/{version}/script.js'
@@ -66,6 +82,8 @@ def generate_html(row, output_file, version='v1'):
     # Ensure row is a dictionary and JSON serializable
     if isinstance(row, pd.Series):
         row = row.to_dict()
+        if split_comments:
+            row['comment'] = split_by_newlines(row['comment'])
     elif not isinstance(row, dict):
         raise TypeError("Row must be a dictionary or a Pandas Series convertible to a dictionary")
 
@@ -88,7 +106,10 @@ def generate_html(row, output_file, version='v1'):
     metadata['js'] = js_metadata
 
     # Render HTML content
-    html_content, generation_time = render_html(row, template_content, css_content, js_content)
+    html_content, generation_time = render_html(row,
+                                                template_content,
+                                                css_content,
+                                                js_content)
     metadata['html_generation'] = {
         'generation_time': generation_time
     }
