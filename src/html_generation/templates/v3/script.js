@@ -14,9 +14,35 @@ function joinArrayWithBr(array, node) {
   node.innerHTML = array.join('<br>');
 }
 
+function getChunks(paragraphs, chunkSize = 150) {
+    //[paragraph, paragraph, paragraph] [[word, word, ...], [word, word, ...], [word, word, ...]]
+    paragraphs = paragraphs.map(paragraph => paragraph.split(/\s+/))
+
+    const chunks = []
+    paragraphs.forEach((paragraph, pIndex) => {
+        const lastChIndex = chunks.length - 1
+        if (chunks.length === 0) {
+            chunks.push([])
+        }
+        const lastPIndex = chunks[lastChIndex].length - 1
+        if (pIndex === 0) {
+            chunks[chunks.length - 1].push([])
+        }
+        paragraph.map((word, sIndex) => {
+            if (chunks[lastChIndex][lastPIndex].length < chunkSize) {
+                chunks[lastChIndex][lastPIndex].push(word);
+            } else {
+                chunks.push([word])
+            }
+        })
+    })
+
+    return chunks
+}
+
 function animateText(element) {
     const text = element.innerHTML;
-    const words = text.split(' ');
+    const words = text.split(/\s+/);
     element.innerHTML = '';
 
     const totalDuration = getDurationFromUrl();
@@ -51,6 +77,7 @@ function animateText(element) {
 
 document.addEventListener('DOMContentLoaded', () => {
     joinArrayWithBr(window.comment, document.getElementById('comment1'));
+    console.log(getChunks(window.comment), window.comment)
     setTimeout(() => {
         const commentText = document.getElementById('comment1');
         commentText.style.cssText = 'opacity: 1;';

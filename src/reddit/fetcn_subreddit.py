@@ -1,13 +1,17 @@
 import os
-from urllib.parse import urlparse
-
 import praw
 import csv
 
-# Reddit API credentials
-client_id = 'w7BZhB-NLf8RXHiTLkpjdg'
-client_secret = 'AjVlh97m-WDeEtwV1-Q8hX_V1S7znw'
-user_agent = 'python:my_reddit_bot:v1.0 (by /u/LevelRelationship732)'
+from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Get variables
+client_id = os.getenv('CLIENT_ID')
+client_secret = os.getenv('CLIENT_SECRET')
+user_agent = os.getenv('USER_AGENT')
 
 # Initialize PRAW with your credentials
 reddit = praw.Reddit(client_id=client_id,
