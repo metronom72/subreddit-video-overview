@@ -1,3 +1,4 @@
 .idea/
 /output_*/
 **/__pycache__/*
+.env
