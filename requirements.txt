@@ -1,0 +1,10 @@
+gTTS==2.5.1
+Jinja2==3.1.4
+moviepy==1.0.3
+pandas==2.0.3
+praw==7.7.1
+pydub==0.25.1
+python-dotenv==1.0.1
+selenium==4.22.0
+tqdm==4.66.4
+webdriver_manager==4.0.1
