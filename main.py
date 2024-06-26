@@ -3,7 +3,7 @@ import time
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from concurrent.futures import ThreadPoolExecutor
-from src.audio_generation.generate_audio import generate_audio
+from src.audio_generation.generate_audio import generate_audio_gtts
 from src.reddit.fetcn_subreddit import fetch_subreddit
 from src.video_generation.combine_video_audio import combine_video_audio
 from src.video_generation.combine_videos import concatenate_videos
@@ -104,7 +104,7 @@ def main():
     combined_mp4 = os.path.join(output_dir, f'output.mp4')
 
     for index, row in data.iterrows():
-        generate_audio(row['comment'], 'en', f'{output_dir}/comment_{index}.mp3')
+        generate_audio_gtts(row['comment'], 'en', f'{output_dir}/comment_{index}.mp3')
         record_mp4_task(index, row, output_dir, version)
 
     # Combine video and audio files in parallel
