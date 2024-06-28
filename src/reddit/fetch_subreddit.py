@@ -8,15 +8,17 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Get variables
-client_id = os.getenv('CLIENT_ID')
-client_secret = os.getenv('CLIENT_SECRET')
-user_agent = os.getenv('USER_AGENT')
 
-# Initialize PRAW with your credentials
-reddit = praw.Reddit(client_id=client_id,
-                     client_secret=client_secret,
-                     user_agent=user_agent)
+
+def reddit():
+    # Get variables
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET')
+    user_agent = os.getenv('USER_AGENT')
+
+    return praw.Reddit(client_id=client_id,
+                       client_secret=client_secret,
+                       user_agent=user_agent)
 
 
 def get_top_comments_from_post(url, limit=30):
@@ -28,7 +30,7 @@ def get_top_comments_from_post(url, limit=30):
 
     :return: A list of top comments, sorted by score (number of votes).
     """
-    submission = reddit.submission(url=url)
+    submission = reddit().submission(url=url)
     submission.comments.replace_more(limit=0)  # Remove "load more comments" instances
     comments = submission.comments.list()
 
@@ -50,13 +52,12 @@ def extract_comment_data(comment, indent=0):
     :return: A list of dictionaries with the extracted comment data.
     :rtype: list[dict]
     """
-    comments_data = []
-    comments_data.append({
+    comments_data = [{
         'author': str(comment.author),
         'votes': comment.score,
         'comment': comment.body,
         'indent': indent
-    })
+    }]
     subcomments = comment.replies.list()
     for subcomment in subcomments:
         if subcomment.score > 30:
@@ -99,4 +100,3 @@ def fetch_subreddit(post_url, limit):
             writer.writerow(data)
 
     print(f"Top {limit} comments from the post have been written to {output_file}.")
-

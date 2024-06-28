@@ -4,7 +4,7 @@ import time
 import pandas as pd
 
 from src.audio_generation.generate_audio import generate_audio_gtts, generate_audio_mozilla_tts
-from src.reddit.fetcn_subreddit import fetch_subreddit
+from src.reddit.fetch_subreddit import fetch_subreddit
 from src.video_generation.combine_video_audio import combine_video_audio
 from src.video_generation.record_html import record_mp4_task
 
