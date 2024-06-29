@@ -1,8 +1,5 @@
 import os
-from collections import UserList
 from unittest.mock import Mock, patch
-import praw
-from praw.models import Comment
 
 from src.reddit.fetch_subreddit import get_top_comments_from_post, reddit, extract_comment_data, fetch_subreddit
 import unittest
@@ -20,12 +17,18 @@ class CommentMock:
         self.replies.list = Mock(return_value=replies if replies else [])
 
 
-class TestReddit(unittest.TestCase):
+class TestFetchSubreddit(unittest.TestCase):
     def setUp(self):
         # Initializing mocks for comments
         self.comment1 = CommentMock('user1', 100, 'test comment 1')
         self.comment2 = CommentMock('user2', 32, 'test comment 2', [self.comment1])
         self.comment3 = CommentMock('user3', 29, 'test comment 3', [self.comment1])
+
+    def tearDown(self):
+        project_root = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the current script
+        output_path = os.path.join(project_root, 'output.csv')  # Construct the full path
+        if os.path.exists(output_path):
+            os.remove(output_path)
 
     @patch('os.getenv')
     @patch('praw.Reddit')
