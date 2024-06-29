@@ -71,9 +71,9 @@ def write_output_file(output_file, content):
 def generate_html(row, output_file, version='v1'):
     split_comments = version not in ['v1', 'v2']
 
-    template_file = f'src/html_generation/templates/{version}/template.html'
-    css_file = f'src/html_generation/templates/{version}/style.css'
-    js_file = f'src/html_generation/templates/{version}/script.js'
+    template_file = f'src/html/templates/{version}/template.html'
+    css_file = f'src/html/templates/{version}/style.css'
+    js_file = f'src/html/templates/{version}/script.js'
 
     # Ensure row is a dictionary and JSON serializable
     if isinstance(row, pd.Series):
@@ -106,7 +106,7 @@ def generate_html(row, output_file, version='v1'):
                                                 template_content,
                                                 css_content,
                                                 js_content)
-    metadata['html_generation'] = {
+    metadata['html'] = {
         'generation_time': generation_time
     }
 
