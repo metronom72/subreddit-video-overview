@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 from src.video_generation.combine_video_audio import combine_video_audio
-from src.html_generation.generate_html import generate_html
+from src.html.generate_html import generate_html
 
 
 def get_mp3_length(mp3_file):

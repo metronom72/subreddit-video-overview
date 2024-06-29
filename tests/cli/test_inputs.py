@@ -234,7 +234,7 @@ class TestInputs(unittest.TestCase):
 
         # Verify
         self.assertIsNone(result)
-        mock_select_version.assert_called_once_with('src/html_generation/templates')
+        mock_select_version.assert_called_once_with('src/html/templates')
 
     @patch('src.cli.inputs.select_version')
     def test_get_version_not_none(self, mock_select_version):
@@ -247,7 +247,7 @@ class TestInputs(unittest.TestCase):
 
         # Verify
         self.assertEqual(result, expected_return_value)
-        mock_select_version.assert_called_once_with('src/html_generation/templates')
+        mock_select_version.assert_called_once_with('src/html/templates')
 
     def test_create_output_directory_returns_string(self):
         result = inputs.create_output_directory()

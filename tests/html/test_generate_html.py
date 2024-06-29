@@ -6,8 +6,8 @@ from unittest.mock import mock_open, patch
 
 import pandas as pd
 
-from src.html_generation import generate_html
-from src.html_generation.generate_html import render_html, generate_html as generate_html_function
+from src.html import generate_html
+from src.html.generate_html import render_html, generate_html as generate_html_function
 
 
 class TestGenerateHtml(unittest.TestCase):
@@ -152,9 +152,9 @@ class TestGenerateHtml(unittest.TestCase):
         self.assertEqual(size, 10)
         self.assertEqual(time_taken, 1000)
 
-    @patch("src.html_generation.generate_html.get_metadata")
-    @patch("src.html_generation.generate_html.render_html")
-    @patch("src.html_generation.generate_html.write_output_file")
+    @patch("src.html.generate_html.get_metadata")
+    @patch("src.html.generate_html.render_html")
+    @patch("src.html.generate_html.write_output_file")
     def test_generate_html_with_dict_and_valid_version(self, mock_write_output_file, mock_render_html, mock_get_metadata):
         mock_write_output_file.return_value = 1000, 1  # returns output_size, write_time
         mock_render_html.return_value = "html_content", 0.1  # returns html_content, generation_time
@@ -165,9 +165,9 @@ class TestGenerateHtml(unittest.TestCase):
         self.assertEqual(len(metadata), 1)
         self.assertEqual(metadata[0]["version"], 'v1')
 
-    @patch("src.html_generation.generate_html.get_metadata")
-    @patch("src.html_generation.generate_html.render_html")
-    @patch("src.html_generation.generate_html.write_output_file")
+    @patch("src.html.generate_html.get_metadata")
+    @patch("src.html.generate_html.render_html")
+    @patch("src.html.generate_html.write_output_file")
     def test_generate_html_with_series_and_valid_version(self, mock_write_output_file, mock_render_html, mock_get_metadata):
         mock_write_output_file.return_value = 1000, 1  # returns output_size, write_time
         mock_render_html.return_value = "html_content", 0.1  # returns html_content, generation_time
