@@ -1,18 +1,17 @@
-import shutil
-import time
-import subprocess
 import os
+import shutil
+import subprocess
+import time
 
 from pydub import AudioSegment
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
-from src.video_generation.combine_video_audio import combine_video_audio
 from src.html.generate_html import generate_html
 
 
@@ -22,8 +21,8 @@ def get_mp3_length(mp3_file):
 
     :param mp3_file: The path to the MP3 file.
     :type mp3_file: str
-    :return: The length of the MP3 file in seconds.
-    :rtype: float
+    :return The length of the MP3 file in seconds.
+    :rtype float
     """
     audio = AudioSegment.from_mp3(mp3_file)
     duration = len(audio) / 1000.0  # duration in seconds
@@ -40,8 +39,8 @@ def copy_files_by_list(file_list, target_dir, prefix=""):
     :type target_dir: str
     :param prefix: An optional prefix to be added to the file paths.
     :type prefix: str
-    :return: None
-    :rtype: None
+    :return None
+    :rtype None
     """
     # Ensure the target directory exists
     os.makedirs(target_dir, exist_ok=True)
@@ -68,7 +67,7 @@ def record_mp4_task(index, row, output_dir, version):
     :param index: The unique identifier for the task.
     :param row: The row of data containing the task details.
     :param output_dir: The directory where the output files will be saved.
-    :return: None
+    :return None
 
     This method is used to record a task as an MP4 video. It takes four parameters: `index`, `row`, `template`, and `output_dir`.
 
@@ -103,8 +102,8 @@ def get_window_id(window_name):
 
     :param window_name: The name of the window to search for.
     :type window_name: str
-    :return: The ID of the window, or None if the window is not found.
-    :rtype: str or None
+    :return The ID of the window, or None if the window is not found.
+    :rtype str or None
     """
     try:
         result = subprocess.run(['xdotool', 'search', '--name', window_name], stdout=subprocess.PIPE)
@@ -122,7 +121,7 @@ def get_window_id(window_name):
 def get_window_geometry(window_id):
     """
     :param window_id: The ID of the window
-    :return: The x and y position, width, and height of the window as integers
+    :return The x and y position, width, and height of the window as integers
     """
     result = subprocess.run(['xdotool', 'getwindowgeometry', window_id], stdout=subprocess.PIPE)
     output = result.stdout.decode()
@@ -138,7 +137,7 @@ def record_mp4(path, output, duration):
     :param path: The path to the HTML file or URL that needs to be recorded.
     :param output: The output file path where the recorded video should be saved.
     :param duration: The duration of the recording in seconds.
-    :return: None
+    :return None
 
     This method records a video of the specified HTML page or URL using the Chrome browser and FFmpeg. It maximizes the Chrome window, disables GPU acceleration, and sets the window size to 1920x1080.
 
@@ -179,7 +178,6 @@ def record_mp4(path, output, duration):
         style.innerHTML = '* { cursor: none !important; }';
         document.head.appendChild(style);
     """)
-
 
     driver.execute_script("document.title = 'Sample HTML';")
     time.sleep(1)  # Wait for the page to load

@@ -1,8 +1,10 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
-from src.cli.inputs import generate_audio_files, record_videos, combine_video_audio_task, get_comments, get_tts_library, get_version, create_output_directory
-from src.video_generation.combine_videos import concatenate_videos
-from src.video_generation.store_metadata import store_metadata
+
+from src.cli.inputs import generate_audio_files, record_videos, combine_video_audio_task, get_comments, get_tts_library, \
+    get_version, create_output_directory
+from src.video.combine_videos import concatenate_videos
+from src.video.store_metadata import store_metadata
 
 
 def main():

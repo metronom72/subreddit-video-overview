@@ -1,13 +1,14 @@
 import os
 import re
+import textwrap
 import time
 
 import librosa
 import numpy as np
+from TTS.api import TTS
 from gtts import gTTS
 from pydub import AudioSegment
 from tqdm import tqdm
-from TTS.api import TTS
 
 
 def ensure_directory_exists(file_path):
@@ -15,7 +16,7 @@ def ensure_directory_exists(file_path):
     Ensures that the directory for the given file path exists.
     Creates the directory if it doesn't exist.
     :param file_path: The file path to check.
-    :return: None
+    :return None
     """
     directory = os.path.dirname(file_path)
     if directory and not os.path.exists(directory):
@@ -27,11 +28,24 @@ def append_temp_to_final(temp_filename, final_filename):
     Appends the content of the temporary file to the final file.
     :param temp_filename: The temporary file name.
     :param final_filename: The final file name.
-    :return: None
+    :return None
     """
     with open(temp_filename, 'rb') as temp_file:
         with open(final_filename, 'ab') as final_file:
             final_file.write(temp_file.read())
+
+
+def split_text_into_phrases(text, max_length, chunk_size):
+    # First split the text by the max_length
+    split_by_max_length = textwrap.wrap(text, max_length)
+
+    # Then, split each chunk further by the chunk_size
+    split_into_chunks = [textwrap.wrap(chunk, chunk_size) for chunk in split_by_max_length]
+
+    # Flattening the list of lists
+    split_into_chunks = [chunk for sublist in split_into_chunks for chunk in sublist]
+
+    return split_into_chunks
 
 
 def generate_audio_gtts(text, output_file='output.mp3', language='en'):
@@ -40,7 +54,7 @@ def generate_audio_gtts(text, output_file='output.mp3', language='en'):
     :param text: The text to be converted into audio.
     :param output_file: The name of the output audio file.
     :param language: The language of the text.
-    :return: None
+    :return None
     """
     chunk_size = 200  # Adjusted chunk size
     chunks = split_text_into_phrases(text, 50, chunk_size)
@@ -67,7 +81,7 @@ def preprocess_text(text):
     """
     Preprocess the text to ensure smooth transitions between sentences and remove unsupported characters.
     :param text: The text to be converted into audio.
-    :return: Preprocessed text.
+    :return Preprocessed text.
     """
     # Remove unsupported characters
     text = re.sub(r'[^\w\s,.!?]', '', text)
@@ -81,7 +95,7 @@ def split_text_into_chunks(text, chunk_size=200):
     Splits text into smaller chunks to avoid decoder step limit.
     :param text: The text to be converted into audio.
     :param chunk_size: The maximum number of characters in each chunk.
-    :return: A list of text chunks.
+    :return A list of text chunks.
     """
     words = text.split()
     chunks = []
@@ -106,7 +120,7 @@ def check_audio_quality(file_path):
     """
     Check the quality of the generated audio file.
     :param file_path: The path to the audio file.
-    :return: True if the quality is acceptable, False otherwise.
+    :return True if the quality is acceptable, False otherwise.
     """
     # Load audio file
     y, sr = librosa.load(file_path, sr=None)
@@ -139,7 +153,7 @@ def generate_audio_chunk(tts, chunk, temp_file):
     :param tts: The TTS object.
     :param chunk: The text chunk.
     :param temp_file: The temporary file path.
-    :return: True if the chunk is generated successfully, False otherwise.
+    :return True if the chunk is generated successfully, False otherwise.
     """
     for attempt in range(4):  # Retry up to 4 times
         tts.tts_to_file(text=chunk, file_path=temp_file)
@@ -156,7 +170,7 @@ def generate_audio_mozilla_tts(text, output_file='output.wav', model_name='tts_m
     :param text: The text to be converted into audio.
     :param output_file: The name of the output audio file.
     :param model_name: The name of the TTS model to use.
-    :return: None
+    :return None
     """
     ensure_directory_exists(output_file)
 

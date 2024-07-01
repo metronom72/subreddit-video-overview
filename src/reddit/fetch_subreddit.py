@@ -1,13 +1,12 @@
-import os
-import praw
 import csv
-
+import os
 from urllib.parse import urlparse
+
+import praw
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
-
 
 
 def reddit():
@@ -28,7 +27,7 @@ def get_top_comments_from_post(url, limit=30):
     :param url: The URL of the post.
     :param limit: The maximum number of comments to retrieve (default: 30).
 
-    :return: A list of top comments, sorted by score (number of votes).
+    :return A list of top comments, sorted by score (number of votes).
     """
     submission = reddit().submission(url=url)
     submission.comments.replace_more(limit=0)  # Remove "load more comments" instances
@@ -49,8 +48,8 @@ def extract_comment_data(comment, indent=0):
     :type comment: praw.models.Comment
     :param indent: The indentation level of the comment.
     :type indent: int
-    :return: A list of dictionaries with the extracted comment data.
-    :rtype: list[dict]
+    :return A list of dictionaries with the extracted comment data.
+    :rtype list[dict]
     """
     comments_data = [{
         'author': str(comment.author),
@@ -72,7 +71,7 @@ def fetch_subreddit(post_url, limit):
 
     :param post_url: The URL of the post to fetch comments from.
     :param limit: The number of top comments to fetch.
-    :return: None
+    :return None
     """
     comments = get_top_comments_from_post(post_url, limit)
 

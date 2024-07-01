@@ -1,10 +1,12 @@
+import os
+import shutil
+import tempfile
 import time
 import unittest
 from unittest.mock import patch
-import tempfile
-import os
-import shutil
+
 import pandas as pd
+
 from src.cli import inputs  # Make sure to import your module correctly
 
 
@@ -180,6 +182,9 @@ class TestInputs(unittest.TestCase):
         mock_read_csv.return_value = pd.DataFrame({"A": [1, 2, 3, 4]}, columns=["A"])
         result = inputs.get_comments()
 
+        if isinstance(result, tuple):  # check if result is a tuple
+            result = result[0]  # unpack DataFrame from tuple
+
         # Verify correct function calls were made
         mock_input.assert_called_once_with('Use default comment? (yes/no): ')
         mock_read_csv.assert_called_once_with('samples/comments.csv')
@@ -193,6 +198,9 @@ class TestInputs(unittest.TestCase):
         mock_fetch_comments.return_value = pd.DataFrame({"B": [5, 6, 7, 8]}, columns=["B"])
         result = inputs.get_comments()
 
+        if isinstance(result, tuple):  # check if result is a tuple
+            result = result[0]  # unpack DataFrame from tuple
+
         # Verify correct function calls were made
         mock_input.assert_called_once_with('Use default comment? (yes/no): ')
         mock_fetch_comments.assert_called_once()
@@ -204,6 +212,9 @@ class TestInputs(unittest.TestCase):
     @patch('src.cli.inputs.fetch_comments', return_value=None)
     def test_get_comments_none(self, mock_fetch_comments, mock_input):
         result = inputs.get_comments()
+
+        if isinstance(result, tuple):  # check if result is a tuple
+            result = result[0]  # unpack DataFrame from tuple
 
         # Verify correct function calls were made
         mock_input.assert_called_once_with('Use default comment? (yes/no): ')

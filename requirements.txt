@@ -3,13 +3,14 @@ Jinja2==3.1.4
 librosa==0.10.2.post1
 moviepy==1.0.3
 noisereduce==3.0.2
-numpy==2.0.0
-pandas==1.5.3
+numpy>=1.20.3
+pandas==1.4.0
 praw==7.7.1
 pydub==0.25.1
 python-dotenv==1.0.1
 selenium==4.22.0
 tqdm==4.66.4
 TTS==0.22.0
-TTS==0.22.0
 webdriver_manager==4.0.1
+thinc==8.2.2
+gruut==2.2.3

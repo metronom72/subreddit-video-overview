@@ -1,13 +1,13 @@
-import os
 import json
-import subprocess
 import math
+import os
+import subprocess
 
 
 def format_size(size_bytes):
     """
     :param size_bytes: The size in bytes that needs to be formatted.
-    :return: The formatted size in a human-readable format.
+    :return The formatted size in a human-readable format.
 
     This method takes a size in bytes and formats it into a human-readable format. It returns the formatted size as a string.
 
@@ -35,7 +35,7 @@ def format_duration(seconds):
     Format the given number of seconds into the following format: HH:MM:SS.
 
     :param seconds: The number of seconds to be formatted. (int)
-    :return: The formatted duration in the format "HH:MM:SS". (str)
+    :return The formatted duration in the format "HH:MM:SS". (str)
 
     Example:
         >>> format_duration(3661)
@@ -52,8 +52,8 @@ def format_bitrate(bitrate):
 
     :param bitrate: The bitrate to format.
     :type bitrate: float
-    :return: The formatted bitrate.
-    :rtype: str
+    :return The formatted bitrate.
+    :rtype str
     """
     if bitrate == 0:
         return "0 bps"
@@ -67,7 +67,7 @@ def format_bitrate(bitrate):
 def get_file_metadata(file_path):
     """
     :param file_path: the path of the file for which to retrieve metadata
-    :return: a dictionary containing the file metadata
+    :return a dictionary containing the file metadata
     """
     try:
         # Run ffprobe command to get file metadata
@@ -114,7 +114,7 @@ def store_metadata(folder_path):
     Retrieve metadata from all the MP4 and MP3 files present in the given folder.
 
     :param folder_path: The path to the folder containing MP4 and MP3 files.
-    :return: None
+    :return None
 
     This method reads all the MP4 and MP3 files in the specified folder, extracts their metadata using the `get_file_metadata` function, and stores the metadata in a list. The list is then saved as a JSON file named `metadata.json` in the current working directory.
     """

@@ -8,7 +8,7 @@ def adjust_video_length(input_video, output_video, target_length):
     :param input_video: The path to the input video file.
     :param output_video: The path to save the adjusted video.
     :param target_length: The desired duration of the adjusted video in seconds.
-    :return: None
+    :return None
 
     The `adjust_video_length` method adjusts the length of an input video clip to the specified target length. It uses the `VideoFileClip` class from the moviepy library to load the video clip.
 

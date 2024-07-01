@@ -1,0 +1,44 @@
+# flake8 configuration file
+# For more options and details about configuration, see:
+# https://flake8.pycqa.org/en/latest/user/configuration.html
+
+# Plugins configuration (optional)
+plugins:
+  # Example: enable flake8-docstrings plugin
+  - flake8-docstrings
+
+# Ignore specific errors or rules (optional)
+ignore:
+  - E203  # Whitespace before ':'
+  - W503  # Line break before binary operator
+
+# Select which errors or rules to enable or disable (optional)
+select:
+  - E101  # Indentation contains mixed spaces and tabs (deprecated, use E111)
+  - E111  # Indentation is not a multiple of four
+
+# Maximum line length (optional)
+max-line-length: 79
+
+# Enable or disable specific error messages (optional)
+disable:
+  - E226  # Missing whitespace around arithmetic operator
+
+# Per-file-ignores (optional)
+per-file-ignores:
+  # Example: ignore E402 in this specific file
+  your_python_file.py: E402
+
+# Exclude specific files or directories (optional)
+exclude:
+  - .git/
+  - __pycache__/
+
+# Extend the list of error codes checked by default (optional)
+extend-ignore:
+  - E123  # Closing bracket does not match indentation of opening bracket's line
+
+# Additional custom options (optional)
+# Example:
+# custom-option: value
+

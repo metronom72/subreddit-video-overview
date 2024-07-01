@@ -5,8 +5,8 @@ import pandas as pd
 
 from src.audio_generation.generate_audio import generate_audio_gtts, generate_audio_mozilla_tts
 from src.reddit.fetch_subreddit import fetch_subreddit
-from src.video_generation.combine_video_audio import combine_video_audio
-from src.video_generation.record_html import record_mp4_task
+from src.video.combine_video_audio import combine_video_audio
+from src.video.record_html import record_mp4_task
 
 
 def list_csv_files(directory):
@@ -15,8 +15,8 @@ def list_csv_files(directory):
 
     :param directory: The directory to search for CSV files.
     :type directory: str
-    :return: A sorted list of CSV file names.
-    :rtype: list[str]
+    :return A sorted list of CSV file names.
+    :rtype list[str]
     """
     return sorted([f for f in os.listdir(directory) if f.endswith('.csv')])
 
@@ -27,8 +27,8 @@ def list_folders(directory):
 
     :param directory: The path of the directory to search for folder names.
     :type directory: str
-    :return: A sorted list of folder names found in the given directory.
-    :rtype: list[str]
+    :return A sorted list of folder names found in the given directory.
+    :rtype list[str]
     """
     return sorted([f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))])
 
@@ -121,13 +121,13 @@ def get_comments():
     else:
         data = fetch_comments()
         if data is None:
-            return
+            return None, use_default
 
     # Print raw data for debugging
     print("Raw CSV Data:")
     print(data)
 
-    return data
+    return data, use_default
 
 
 def get_tts_library():

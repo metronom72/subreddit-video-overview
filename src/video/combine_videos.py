@@ -8,7 +8,7 @@ def create_file_list(directory, file_list_path):
 
     :param directory: The directory to search for files.
     :param file_list_path: The path to the output file list.
-    :return: None
+    :return None
     """
     with open(file_list_path, 'w') as file_list:
         for filename in sorted(os.listdir(directory)):
@@ -20,7 +20,7 @@ def concatenate_videos(directory, output_file):
     """
     :param directory: The directory containing the videos to be concatenated.
     :param output_file: The path to the output file where the concatenated video will be saved.
-    :return: None
+    :return None
 
     This method concatenates multiple videos stored in the specified directory into a single video file. It uses FFmpeg to perform the concatenation with re-encoding to prevent any potential issues.
 

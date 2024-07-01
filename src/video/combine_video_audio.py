@@ -13,7 +13,7 @@ def combine_video_audio(input_video, input_audio, output_video):
     :type input_audio: str
     :param output_video: The path to save the output video file.
     :type output_video: str
-    :return: None
+    :return None
 
     :raises ValueError: if input_video or input_audio is not a valid file path
 
