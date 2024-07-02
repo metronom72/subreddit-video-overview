@@ -1,6 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 
+from src.cli.converters import convert_data_to_dataframe
 from src.cli.inputs import generate_audio_files, record_videos, combine_video_audio_task, get_comments, get_tts_library, \
     get_version, create_output_directory
 from src.video.combine_videos import concatenate_videos
@@ -19,14 +20,15 @@ def main():
     combined_mp4 = os.path.join(output_dir, f'output.mp4')
 
     # Generate audio files for comments
-    generate_audio_files(data, tts_library, output_dir)
+    generate_audio_files(convert_data_to_dataframe(data), tts_library, output_dir)
 
     # Record videos for comments
-    record_videos(data, version, output_dir)
+    record_videos(convert_data_to_dataframe(data), version, output_dir)
 
     # Combine video and audio files in parallel
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(combine_video_audio_task, index, row, output_dir) for index, row in data.iterrows()]
+        futures = [executor.submit(combine_video_audio_task, index, row, output_dir) for index, row in
+                   convert_data_to_dataframe(data).iterrows()]
         for future in futures:
             future.result()  # Wait for all futures to complete
 

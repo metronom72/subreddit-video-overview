@@ -9,23 +9,6 @@ from src.video.combine_video_audio import combine_video_audio
 from src.video.record_html import record_mp4_task
 
 
-def convert_data_to_dataframe(data):
-    print(f"Original data: {data}")
-
-    # Check if the first element of the tuple is a DataFrame
-    if isinstance(data, tuple):
-        if isinstance(data[0], pd.DataFrame):
-            data = data[0]
-        else:
-            raise TypeError("The first element of the tuple must be a pandas DataFrame.")
-    elif not isinstance(data, pd.DataFrame):
-        raise TypeError("The 'data' parameter must be a pandas DataFrame or a tuple containing a DataFrame.")
-
-    print(f"Converted data: {data}")
-
-    return data
-
-
 def list_csv_files(directory):
     """
     Return a sorted list of CSV files in the specified directory.
@@ -115,7 +98,6 @@ def select_version(templates_dir):
 
 def generate_audio_files(data, tts_library, output_dir):
     """Generate audio files for each comment in the data using the specified TTS library."""
-    data = convert_data_to_dataframe(data)
 
     for index, row in data.iterrows():
         if tts_library == 'gtts':
@@ -126,7 +108,6 @@ def generate_audio_files(data, tts_library, output_dir):
 
 def record_videos(data, version, output_dir):
     """Record videos for each comment in the data using the specified HTML template version."""
-    data = convert_data_to_dataframe(data)
 
     for index, row in data.iterrows():
         record_mp4_task(index, row, output_dir, version)

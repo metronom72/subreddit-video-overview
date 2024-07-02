@@ -29,6 +29,62 @@ def get_mp3_length(mp3_file):
     return duration
 
 
+def reencode_mp3(input_file, output_file):
+    """
+    Re-encode an MP3 file to ensure proper format and integrity.
+
+    :param input_file: The path to the input MP3 file.
+    :type input_file: str
+    :param output_file: The path to the output re-encoded MP3 file.
+    :type output_file: str
+    """
+    try:
+        # Load the MP3 file
+        audio = AudioSegment.from_mp3(input_file)
+
+        # Export the audio to a new MP3 file with the specified parameters
+        audio.export(output_file, format="mp3", bitrate="192k")
+        print(f"Re-encoded file saved as {output_file}")
+    except Exception as e:
+        print(f"An error occurred during re-encoding: {e}")
+
+
+def get_mp3_length_v2(mp3_file, retries=3):
+    """
+    Get the length of an MP3 file in seconds, with re-encoding if necessary.
+
+    :param mp3_file: The path to the MP3 file.
+    :type mp3_file: str
+    :param retries: Number of times to retry re-encoding if there are issues.
+    :type retries: int
+    :return: The length of the MP3 file in seconds.
+    :rtype: float
+    """
+    attempt = 0
+    temp_file = mp3_file
+
+    while attempt <= retries:
+        try:
+            audio = AudioSegment.from_mp3(temp_file)
+            duration = len(audio) / 1000.0  # duration in seconds
+            return duration
+        except Exception as e:
+            print(f"Error: {e}")
+            if attempt < retries:
+                print(f"Attempting re-encoding ({attempt + 1}/{retries})...")
+                new_temp_file = f"{mp3_file.rsplit('.', 1)[0]}_reencoded_{attempt + 1}.mp3"
+                try:
+                    reencode_mp3(temp_file, new_temp_file)
+                    temp_file = new_temp_file
+                except Exception as e:
+                    print(f"An error occurred during re-encoding: {e}")
+                    return None
+            else:
+                print("Maximum re-encoding attempts reached. Failed to get the duration of the MP3 file.")
+                return None
+        attempt += 1
+
+
 def copy_files_by_list(file_list, target_dir, prefix=""):
     """
     Copy files from the given file list to the target directory.
@@ -93,7 +149,7 @@ def record_mp4_task(index, row, output_dir, version):
     generate_html(row, html_file, version)
 
     print(f"Processing {html_file} to {mp4_file}")
-    record_mp4(html_file, mp4_file, get_mp3_length(mp3_file))
+    record_mp4(html_file, mp4_file, get_mp3_length_v2(mp3_file))
 
 
 def get_window_id(window_name):
@@ -180,7 +236,7 @@ def record_mp4(path, output, duration):
     """)
 
     driver.execute_script("document.title = 'Sample HTML';")
-    time.sleep(1)  # Wait for the page to load
+    time.sleep(0.1)  # Wait for the page to load
 
     window_id = get_window_id('Sample HTML')
     if not window_id:
