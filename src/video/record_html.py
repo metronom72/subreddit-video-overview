@@ -236,7 +236,7 @@ def record_mp4(path, output, duration):
     """)
 
     driver.execute_script("document.title = 'Sample HTML';")
-    time.sleep(0.1)  # Wait for the page to load
+    time.sleep(1)  # Wait for the page to load
 
     window_id = get_window_id('Sample HTML')
     if not window_id:
