@@ -141,9 +141,7 @@ def get_tts_library():
     return tts_library
 
 
-def get_version():
-    # Step 3: Select HTML template version
-    templates_dir = 'src/html/templates'
+def get_version(templates_dir='src/html/templates'):
     version = select_version(templates_dir)
     if version is None:
         return

@@ -1,6 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 
+from src.cli.configuration import get_configuration
 from src.cli.converters import convert_data_to_dataframe
 from src.cli.inputs import generate_audio_files, record_videos, combine_video_audio_task, get_comments, get_tts_library, \
     get_version, create_output_directory
@@ -9,6 +10,8 @@ from src.video.store_metadata import store_metadata
 
 
 def main():
+    configuration = get_configuration('./config.toml')
+
     data = get_comments()
 
     tts_library = get_tts_library()

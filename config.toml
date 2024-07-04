@@ -1,0 +1,22 @@
+[output]
+folder = ''
+
+[data_source]
+source = 'reddit'
+urls = []
+comments_qty = 10
+samples = false
+
+[html_generation]
+enabled = true
+version = 'v3'
+
+[audio_generation]
+enabled = true
+tts_library = 'tts'
+
+[video_generation]
+enabled = true
+
+[combining]
+enabled = true
