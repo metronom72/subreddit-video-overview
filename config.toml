@@ -5,7 +5,7 @@ folder = ''
 source = 'reddit'
 urls = []
 comments_qty = 10
-samples = false
+samples = true
 
 [html_generation]
 enabled = true
