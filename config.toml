@@ -1,9 +1,6 @@
-[output]
-folder = ''
-
 [data_source]
 source = 'reddit'
-urls = []
+url = ''
 comments_qty = 10
 samples = true
 
@@ -16,7 +13,7 @@ enabled = true
 tts_library = 'tts'
 
 [video_generation]
-enabled = true
+enabled = false
 
 [combining]
 enabled = true

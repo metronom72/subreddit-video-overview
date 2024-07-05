@@ -113,11 +113,12 @@ def record_videos(data, version, output_dir):
         record_mp4_task(index, row, output_dir, version)
 
 
-def get_comments():
+def get_comments(configuration):
     # Step 1: Prompt to use a default comment or fetch from Reddit
-    use_default = input('Use default comment? (yes/no): ').strip().lower()
+    # use_default = input('Use default comment? (yes/no): ').strip().lower()
+    use_default = configuration['data_source']['samples']
 
-    if use_default == 'yes':
+    if use_default:
         # Default comment data
         data = pd.read_csv('samples/comments.csv')
     else:

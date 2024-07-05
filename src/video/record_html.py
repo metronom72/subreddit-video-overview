@@ -61,28 +61,31 @@ def get_mp3_length_v2(mp3_file, retries=3):
     :rtype: float
     """
     attempt = 0
-    temp_file = mp3_file
+    if os.path.exists(mp3_file):
+        temp_file = mp3_file
 
-    while attempt <= retries:
-        try:
-            audio = AudioSegment.from_mp3(temp_file)
-            duration = len(audio) / 1000.0  # duration in seconds
-            return duration
-        except Exception as e:
-            print(f"Error: {e}")
-            if attempt < retries:
-                print(f"Attempting re-encoding ({attempt + 1}/{retries})...")
-                new_temp_file = f"{mp3_file.rsplit('.', 1)[0]}_reencoded_{attempt + 1}.mp3"
-                try:
-                    reencode_mp3(temp_file, new_temp_file)
-                    temp_file = new_temp_file
-                except Exception as e:
-                    print(f"An error occurred during re-encoding: {e}")
+        while attempt <= retries:
+            try:
+                audio = AudioSegment.from_mp3(temp_file)
+                duration = len(audio) / 1000.0  # duration in seconds
+                return duration
+            except Exception as e:
+                print(f"Error: {e}")
+                if attempt < retries:
+                    print(f"Attempting re-encoding ({attempt + 1}/{retries})...")
+                    new_temp_file = f"{mp3_file.rsplit('.', 1)[0]}_reencoded_{attempt + 1}.mp3"
+                    try:
+                        reencode_mp3(temp_file, new_temp_file)
+                        temp_file = new_temp_file
+                    except Exception as e:
+                        print(f"An error occurred during re-encoding: {e}")
+                        return None
+                else:
+                    print("Maximum re-encoding attempts reached. Failed to get the duration of the MP3 file.")
                     return None
-            else:
-                print("Maximum re-encoding attempts reached. Failed to get the duration of the MP3 file.")
-                return None
-        attempt += 1
+            attempt += 1
+    else:
+        return 10
 
 
 def copy_files_by_list(file_list, target_dir, prefix=""):

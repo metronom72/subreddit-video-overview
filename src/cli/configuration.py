@@ -16,23 +16,19 @@ def read_config(file_path):
     return config
 
 
-def query_input(block, config_folder_path):
+def query_input(block, section, config_folder_path):
     if block.get('enabled', True):
         for key, value in block.items():
-            if value == "" or value is None:
+            if 'version' in block and block['version'] == "":
+                block['version'] = get_version(os.path.join(config_folder_path, 'src/html/templates'))
+            if 'tts_library' in block and block['tts_library'] == "":
+                block['tts_library'] = get_tts_library()
+            if (value == "" or value is None) and (
+                    section == 'data_source' and 'url' in block and not block.get('samples')):
                 new_value = input(f"Please enter a value for '{key}': ")
                 block[key] = new_value
 
     return block
-
-
-def query_urls(block):
-    while not block.get('samples', False) and not block['urls']:
-        url = input("Please enter a URL for 'urls' (leave empty to stop): ")
-        if url:
-            block['urls'].append(url)
-        else:
-            break
 
 
 def get_configuration(config_file_path, output_folder=None):
@@ -46,13 +42,7 @@ def get_configuration(config_file_path, output_folder=None):
         for section, block in config.items():
             print(f"\nProcessing section: {section}")
             if block.get('enabled', True):
-                if 'version' in block and block['version'] == "":
-                    block['version'] = get_version(os.path.join(config_folder_path, 'src/html/templates'))
-                if 'tts_library' in block and block['tts_library'] == "":
-                    block['tts_library'] = get_tts_library()
-                if section == 'data_source' and not block.get('samples', False):
-                    query_urls(block)
-                updated_block = query_input(block, config_folder_path)
+                updated_block = query_input(block, section, config_folder_path)
                 config[section] = updated_block
 
         print("\nUpdated configuration:")
@@ -75,5 +65,5 @@ def get_configuration(config_file_path, output_folder=None):
 if __name__ == "__main__":
     root_folder = os.path.join(os.path.dirname(__file__), './../../')
     config_path = os.path.join(root_folder, 'config.toml')
-    output_folder = os.path.join(root_folder, f'output_{time.strftime("%Y%m%d-%H%M%S")}')
-    get_configuration(config_path, output_folder)
+    output_folder_path = os.path.join(root_folder, f'output_{time.strftime("%Y%m%d-%H%M%S")}')
+    get_configuration(config_path, output_folder_path)
