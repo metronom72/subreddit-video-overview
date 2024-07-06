@@ -129,13 +129,9 @@ def record_mp4_task(index, row, output_dir, version):
     :return None
 
     This method is used to record a task as an MP4 video. It takes four parameters: `index`, `row`, `template`, and `output_dir`.
-
     The `index` parameter is the unique identifier for the task. It is used to generate the filenames for the HTML, MP4, MP3, and with-audio MP4 files.
-
     The `row` parameter is the row of data containing the task details. It is used to populate the template with the appropriate values.
-
     The `template` parameter is the template used to render the HTML content. It should be a valid template object that supports rendering with the `render` method.
-
     The `output_dir` parameter is the directory where the output files will be saved. The HTML, MP4, MP3, and with-audio MP4 files will be created in this directory.
 
     This method performs the following steps:
@@ -199,23 +195,14 @@ def record_mp4(path, output, duration):
     :return None
 
     This method records a video of the specified HTML page or URL using the Chrome browser and FFmpeg. It maximizes the Chrome window, disables GPU acceleration, and sets the window size to 1920x1080.
-
     If the path parameter does not start with 'http://' or 'https://', it is assumed to be a local file path. In such cases, the path is converted to a file URL and the duration is appended as a query parameter. The duration is multiplied by 1000 to convert it to milliseconds.
-
     The method launches an instance of the Chrome browser using the webdriver.Chrome() constructor with the ChromeDriverManager().install() method. It passes the options object, which contains the desired Chrome browser options.
-
     The method then navigates to the specified path using driver.get(). It sets the document title to 'Sample HTML' using JavaScript and waits for the page to load with a sleep of 1 second.
-
     The method retrieves the window ID of the 'Sample HTML' window using the get_window_id() function. If the window ID is not found, an error message is printed, and the browser is closed. Then, the method terminates and waits for the FFmpeg process to complete.
-
     If the window ID is found, the method retrieves the window geometry using the get_window_geometry() function. It prints the window geometry (X, Y, width, height) and adjusts the coordinates to ensure they are non-negative values.
-
     The method starts the FFmpeg process to record the specified window region. It uses subprocess.Popen() to launch the FFmpeg command with the options to grab the window region and save it as an MP4 video file. The process runs in the background.
-
     After starting FFmpeg, the method waits for the body element of the page to have the 'data-rendering-over' attribute using WebDriverWait() and the presence_of_element_located() Expected Condition.
-
     If the attribute is found within the timeout of 300000 milliseconds (5 minutes), a success message is printed. If there is an error or a timeout occurs, an error message is printed.
-
     Finally, the method terminates the FFmpeg process, closes the Chrome browser, and waits for the FFmpeg process to complete.
     """
     options = Options()

@@ -122,12 +122,6 @@ def check_audio_quality(file_path):
     return True
 
 
-def generate_audio_chunk(tts, chunk, temp_file):
-    for attempt in range(4):
-        tts.tts_to_file(text=chunk, file_path=temp_file)
-        return True
-
-
 def generate_audio_chunk(tts, text_chunk, output_file, max_retries=10):
     retry_count = 0
     while retry_count < max_retries:
