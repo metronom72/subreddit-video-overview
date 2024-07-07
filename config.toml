@@ -9,11 +9,12 @@ enabled = true
 version = 'v3'
 
 [audio_generation]
-enabled = true
+enabled = false
 tts_library = 'tts'
 
 [video_generation]
 enabled = true
+extension = 'mp4'
 
 [combining]
 enabled = false

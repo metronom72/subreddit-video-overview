@@ -106,11 +106,11 @@ def generate_audio_files(data, tts_library, output_dir):
             generate_audio_mozilla_tts(row['comment'], f'{output_dir}/comment_{index}.mp3')
 
 
-def record_videos(data, version, output_dir):
+def record_videos(data, version, output_dir, extension):
     """Record videos for each comment in the data using the specified HTML template version."""
 
     for index, row in data.iterrows():
-        record_mp4_task(index, row, output_dir, version)
+        record_mp4_task(index, row, output_dir, version, extension)
 
 
 def get_comments(configuration):

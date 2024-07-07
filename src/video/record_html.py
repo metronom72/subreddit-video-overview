@@ -121,7 +121,7 @@ def copy_files_by_list(file_list, target_dir, prefix=""):
             print(f"File {file_name} does not exist in the current directory")
 
 
-def record_mp4_task(index, row, output_dir, version):
+def record_mp4_task(index, row, output_dir, version, extension):
     """
     :param index: The unique identifier for the task.
     :param row: The row of data containing the task details.
@@ -145,13 +145,13 @@ def record_mp4_task(index, row, output_dir, version):
     new file with a filename generated based on the `index` parameter.
     """
     html_file = os.path.join(output_dir, f'comment_{index}.html')
-    mp4_file = os.path.join(output_dir, f'comment_{index}.mp4')
+    mp4_file = os.path.join(output_dir, f'comment_{index}.{extension}')
     mp3_file = os.path.join(output_dir, f'comment_{index}.mp3')
 
     generate_html(row, html_file, version)
 
     print(f"Processing {html_file} to {mp4_file}")
-    record_mp4(html_file, mp4_file, get_mp3_length_v2(mp3_file))
+    record_html(html_file, mp4_file, get_mp3_length_v2(mp3_file))
 
 
 def get_window_id(window_name):
@@ -190,33 +190,15 @@ def get_window_geometry(window_id):
     return int(x), int(y), int(width), int(height)
 
 
-def record_mp4(path, output, duration):
+def record_html(path, output, duration, framerate=120):
     """
     :param path: The path to the HTML file or URL that needs to be recorded.
-    :param output: The output file path where the recorded video should be saved.
+    :param output: The output file path where the recorded video/audio should be saved.
     :param duration: The duration of the recording in seconds.
+    :param framerate: The framerate of the recording.
     :return None
 
-    This method records a video of the specified HTML page or URL using the Chrome browser and FFmpeg. It maximizes
-    the Chrome window, disables GPU acceleration, and sets the window size to 1920x1080. If the path parameter does
-    not start with 'http://' or 'https://', it is assumed to be a local file path. In such cases, the path is
-    converted to a file URL and the duration is appended as a query parameter. The duration is multiplied by 1000 to
-    convert it to milliseconds. The method launches an instance of the Chrome browser using the webdriver.Chrome()
-    constructor with the ChromeDriverManager().install() method. It passes the options object, which contains the
-    desired Chrome browser options. The method then navigates to the specified path using driver.get(). It sets the
-    document title to 'Sample HTML' using JavaScript and waits for the page to load with a sleep of 1 second. The
-    method retrieves the window ID of the 'Sample HTML' window using the get_window_id() function. If the window ID
-    is not found, an error message is printed, and the browser is closed. Then, the method terminates and waits for
-    the FFmpeg process to complete. If the window ID is found, the method retrieves the window geometry using the
-    get_window_geometry() function. It prints the window geometry (X, Y, width, height) and adjusts the coordinates
-    to ensure they are non-negative values. The method starts the FFmpeg process to record the specified window
-    region. It uses subprocess.Popen() to launch the FFmpeg command with the options to grab the window region and
-    save it as an MP4 video file. The process runs in the background. After starting FFmpeg, the method waits for the
-    body element of the page to have the 'data-rendering-over' attribute using WebDriverWait() and the
-    presence_of_element_located() Expected Condition. If the attribute is found within the timeout of 300000
-    milliseconds (5 minutes), a success message is printed. If there is an error or a timeout occurs,
-    an error message is printed. Finally, the method terminates the FFmpeg process, closes the Chrome browser,
-    and waits for the FFmpeg process to complete.
+    This method records a video or audio of the specified HTML page or URL using the Chrome browser and FFmpeg.
     """
     options = Options()
     options.add_argument('--start-maximized')
@@ -254,11 +236,20 @@ def record_mp4(path, output, duration):
     x = max(0, x)
     y = max(0, y)
 
+    # Determine file extension and set appropriate FFmpeg command
+    file_extension = os.path.splitext(output)[1].lower()
+    if file_extension in ['.mp4', '.mkv']:
+        ffmpeg_cmd = [
+            'ffmpeg', '-y', '-f', 'x11grab', '-video_size', f'{width}x{height}', '-i', f':0.0+{x},{y}',
+            '-codec:v', 'libx264', '-r', str(framerate), '-t', str(duration + 1), output
+        ]
+    else:
+        print(f"Unsupported file extension: {file_extension}")
+        driver.quit()
+        return
+
     # Start FFmpeg to record
-    ffmpeg = subprocess.Popen(
-        ['ffmpeg', '-y', '-f', 'x11grab', '-video_size', f'{width}x{height}', '-i', f':0.0+{x},{y}',
-         '-codec:v', 'libx264', '-r', '30', '-t', str(duration + 1), output]
-    )
+    ffmpeg = subprocess.Popen(ffmpeg_cmd)
 
     try:
         # Wait until the body element has the data-rendering-over attribute

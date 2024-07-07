@@ -16,25 +16,28 @@ def main():
 
     data = get_comments(configuration)
 
+    extension = configuration['video_generation']['extension']
     tts_library = configuration['audio_generation']['tts_library']
-
     version = configuration['html_generation']['version']
+    html_generation_enabled = configuration['html_generation']['enabled']
+    video_generation_enabled = configuration['video_generation']['enabled']
+    audio_generation_enabled = configuration['audio_generation']['enabled']
+    combining_enabled = configuration['combining']['enabled']
 
     combined_mp4 = None
-    if configuration['combining']['enabled']:
-        combined_mp4 = os.path.join(output_dir, f'output.mp4')
+    if combining_enabled:
+        combined_mp4 = os.path.join(output_dir, f'output.{extension}')
 
     # Generate audio files for comments
-    if configuration['audio_generation']['enabled']:
+    if audio_generation_enabled:
         generate_audio_files(convert_data_to_dataframe(data), tts_library, output_dir)
 
     # Record videos for comments
-    if configuration['video_generation']['enabled'] and configuration['html_generation']['enabled']:
-        record_videos(convert_data_to_dataframe(data), version, output_dir)
+    if video_generation_enabled and html_generation_enabled:
+        record_videos(convert_data_to_dataframe(data), version, output_dir, extension)
 
     # Combine video and audio files in parallel
-    if configuration['combining']['enabled'] and configuration['audio_generation']['enabled'] and \
-            configuration['video_generation']['enabled']:
+    if combining_enabled and audio_generation_enabled and video_generation_enabled:
         with ThreadPoolExecutor() as executor:
             futures = [executor.submit(combine_video_audio_task, index, row, output_dir) for index, row in
                        convert_data_to_dataframe(data).iterrows()]
@@ -44,8 +47,7 @@ def main():
     store_metadata(output_dir)
 
     # Concatenate all the MP4 files into one
-    if combined_mp4 is not None and configuration['combining']['enabled'] and configuration['audio_generation'][
-        'enabled'] and configuration['video_generation']['enabled']:
+    if combined_mp4 is not None and combining_enabled and audio_generation_enabled and video_generation_enabled:
         concatenate_videos(os.path.join(output_dir), combined_mp4)
 
     print(f"Images and video saved in {output_dir}")
