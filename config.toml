@@ -6,14 +6,14 @@ samples = true
 
 [html_generation]
 enabled = true
-version = 'v3'
+version = 'v4'
 
 [audio_generation]
 enabled = false
 tts_library = 'tts'
 
 [video_generation]
-enabled = true
+enabled = false
 extension = 'mp4'
 
 [combining]

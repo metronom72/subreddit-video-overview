@@ -5,6 +5,7 @@ from src.cli.configuration import get_configuration
 from src.cli.converters import convert_data_to_dataframe
 from src.cli.inputs import generate_audio_files, record_videos, combine_video_audio_task, get_comments, \
     create_output_directory
+from src.html.generate_html import generate_html
 from src.video.combine_videos import concatenate_videos
 from src.video.store_metadata import store_metadata
 
@@ -35,6 +36,10 @@ def main():
     # Record videos for comments
     if video_generation_enabled and html_generation_enabled:
         record_videos(convert_data_to_dataframe(data), version, output_dir, extension)
+    elif html_generation_enabled:
+        for index, row in convert_data_to_dataframe(data).iterrows():
+            html_file = os.path.join(output_dir, f'comment_{index}.html')
+            generate_html(row, html_file, version)
 
     # Combine video and audio files in parallel
     if combining_enabled and audio_generation_enabled and video_generation_enabled:
