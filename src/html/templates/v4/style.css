@@ -8,7 +8,6 @@ body {
     margin: 0;
     background-color: white;
     color: black;
-    opacity: 0;
     transition: opacity 0.5s ease;
 }
 
@@ -82,8 +81,7 @@ body {
 .comment-text {
     margin: 5px 0;
     font-size: 14px;
-    line-height: 1.5;
-    opacity: 0;
+    line-height: 1.5em;
 }
 
 .comment-text canvas {

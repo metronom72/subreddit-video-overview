@@ -1,133 +1,182 @@
-function getDurationFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return parseInt(urlParams.get('duration'), 10) || 10000; // Default to 10000ms if no duration specified
-}
+const comment = "This comment should be split into chunks, as sentences or chunks of 5 words maximum. These chunks should appear one after another within a box 768px wide with a comfortable fade effect. This comment should appear in a fixed duration, 10 seconds by default.";
+const duration = 10 * 1000; // 10 seconds in milliseconds
+const wordsPerChunk = 5;
 
-function joinArrayWithBr(array, node) {
-    // Ensure the node is a valid DOM element
-    if (!(node instanceof HTMLElement)) {
-        throw new Error("The second argument must be a valid DOM element.");
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('textCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas dimensions to higher resolution
+    const scaleFactor = 2;
+    canvas.width = 768 * scaleFactor;
+    canvas.height = 200 * scaleFactor; // Adjust height as needed
+    canvas.style.width = '768px';
+    canvas.style.height = '200px';
+
+    // Scale the context
+    ctx.scale(scaleFactor, scaleFactor);
+
+    // Initialize log array
+    let log = [];
+
+    // Function to get CSS properties from an element
+    function getCSSProperties(element, properties) {
+        const styles = window.getComputedStyle(element);
+        const result = {};
+        properties.forEach(prop => {
+            result[prop] = styles[prop];
+        });
+        return result;
     }
 
-    // clear the element
-    node.innerHTML = ""
-
-    // Join the array elements with <br> tags
-    // Append the resulting string to the specified node
-    node.innerHTML = array.join('<br>');
-}
-
-function getChunks(paragraphs, chunkSize = 150) {
-    //[paragraph, paragraph, paragraph] [[word, word, ...], [word, word, ...], [word, word, ...]]
-    paragraphs = paragraphs.map(paragraph => paragraph.split(/\s+/))
-
-    const chunks = [[]]
-
-    function lastChunkIndex() {
-        return chunks.length - 1
+    function splitText(text, maxWords) {
+        const words = text.split(' ');
+        const chunks = [];
+        for (let i = 0; i < words.length; i += maxWords) {
+            chunks.push(words.slice(i, i + maxWords).join(' '));
+        }
+        return chunks;
     }
 
-    function lastParagraphIndex() {
-        return chunks[lastChunkIndex()].length - 1
-    }
+    function drawText(ctx, chunks, opacities, lineHeight) {
+        ctx.clearRect(0, 0, canvas.width / scaleFactor, canvas.height / scaleFactor);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = '#000';
 
-    paragraphs.forEach((paragraph, pIndex) => {
-        paragraph.forEach((word, sIndex) => {
-            if (sIndex === 0) {
-                chunks[lastChunkIndex()].push([])
+        let x = 0;
+        let y = 0;
+        const maxWidth = canvas.width / scaleFactor;
+
+        chunks.forEach((text, index) => {
+            const metrics = ctx.measureText(text);
+            const textWidth = metrics.width;
+
+            if (x + textWidth > maxWidth) {
+                x = 0;
+                y += parseFloat(lineHeight);
             }
 
-            if (chunks[lastChunkIndex()].flat().length < chunkSize) {
-                chunks[lastChunkIndex()][lastParagraphIndex()].push(word);
-            } else {
-                chunks.push([[]])
-            }
-        })
-    })
+            ctx.globalAlpha = opacities[index];
+            ctx.fillText(text, x, y);
+            x += textWidth + 10; // Adding 10 pixels space between chunks
+        });
+    }
 
-    return chunks
-}
+    function animateText(chunks, duration, lineHeight) {
+        const chunkDuration = duration / chunks.length;
+        let startTime = null;
+        let opacities = chunks.map(() => 0);
 
-function animateText(element) {
-    const chunks = getChunks(window.comment)
-    const totalDuration = getDurationFromUrl();
-    const wordsList = chunks.flat().flat()
-    const sectionDuration = Math.ceil(totalDuration / chunks.length)
-    let sectionDurations = chunks.map((chunk) => chunk.flat().length / wordsList.length)
-    const totalLengthRelative = sectionDurations.reduce((acc, val) => acc + val, 0)
-    sectionDurations = sectionDurations.map((t) => t / totalLengthRelative * totalDuration)
+        function animate(timestamp) {
+            log.push({event: 'requestAnimationFrame', timestamp});
 
-    chunks.forEach((chunk, chIndex) => {
-        const pastDuration = sectionDurations.slice(0, chIndex + 1).reduce((acc, val) => acc + val, 0)
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
 
-        setTimeout(() => {
-            element.innerHTML = ''
-            chunk = chunk.flat()
-            const totalChunks = Math.ceil(chunk.length / 5);
-            const chunkDuration = sectionDurations[chIndex] / totalChunks;
-
-            chunk.forEach((word, index) => {
-                const span = document.createElement('span');
-                span.innerHTML = word + ' ';
-                span.classList.add('hidden');
-                element.appendChild(span);
-
-                const chunkIndex = Math.floor(index / 5);
-                setTimeout(() => {
-                    for (let i = chunkIndex * 5; i < (chunkIndex + 1) * 5 && i < chunk.length; i++) {
-                        element.children[i].classList.add('visible');
+            chunks.forEach((_, index) => {
+                const delay = index * (chunkDuration / 2);
+                if (elapsed > delay) {
+                    const fadeElapsed = elapsed - delay;
+                    if (fadeElapsed < chunkDuration / 2) {
+                        opacities[index] = fadeElapsed / (chunkDuration / 2);
+                    } else {
+                        opacities[index] = 1;
                     }
-
-                    if (index === chunk.length - 1 && chIndex === chunks.length - 1) {
-                        setTimeout(() => {
-                            const body = document.querySelector('body');
-                            body.setAttribute('data-rendering-over', true);
-                        }, 2000);
-
-                        setTimeout(() => {
-                            const body = document.body;
-                            body.style.cssText = 'opacity: 0;';
-                        }, 750);
-                    }
-                }, chunkIndex * chunkDuration);
+                }
             });
-            console.log(chIndex, pastDuration, pastDuration + sectionDurations[chIndex])
-        }, pastDuration - sectionDurations[chIndex])
-    })
-}
 
-function appendWords(words, ctx) {
-    let index = 0;
+            drawText(ctx, chunks, opacities, lineHeight);
 
-    function addWord() {
-        if (index < words.length) {
-            let wordWidth = ctx.measureText(words[index]).width;
-
-            // Check if the word fits in the current line
-            if (x + wordWidth > canvasWidth - 10) {
-                x = 10; // Reset x to the start of the line
-                y += lineHeight; // Move to the next line
+            if (elapsed < duration + chunkDuration / 2 * chunks.length) {
+                requestAnimationFrame(animate);
+            } else {
+                // Stop recording when animation is done
+                console.log("Stopping recording...");
+                stopRecording();
             }
+        }
 
-            ctx.fillText(words[index], x, y);
-            x += wordWidth + 10; // Move x position for next word
-            index++;
-            setTimeout(addWord, delay);
+        requestAnimationFrame(animate);
+    }
+
+    // MediaRecorder setup to capture the canvas animation
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    function startRecording() {
+        console.log("Starting recording...");
+        log.push({event: 'startRecording', timestamp: Date.now()});
+        try {
+            const stream = canvas.captureStream(30); // 30 fps
+            console.log("Stream obtained:", stream);
+            log.push({event: 'streamObtained', timestamp: Date.now()});
+            mediaRecorder = new MediaRecorder(stream, {mimeType: 'video/webm; codecs=vp9'});
+        } catch (e) {
+            console.error("MediaRecorder initialization failed:", e);
+            log.push({event: 'mediaRecorderError', error: e, timestamp: Date.now()});
+            return;
+        }
+
+        mediaRecorder.ondataavailable = function (event) {
+            console.log("Data available:", event.data);
+            log.push({event: 'dataAvailable', timestamp: Date.now()});
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onerror = function (event) {
+            console.error("MediaRecorder error:", event);
+            log.push({event: 'mediaRecorderError', error: event, timestamp: Date.now()});
+        };
+
+        mediaRecorder.onstart = function () {
+            console.log("MediaRecorder started.");
+            log.push({event: 'mediaRecorderStarted', timestamp: Date.now()});
+        };
+
+        mediaRecorder.onstop = function () {
+            console.log("Recording stopped.");
+            log.push({event: 'mediaRecorderStopped', timestamp: Date.now()});
+            const blob = new Blob(recordedChunks, {type: 'video/webm'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'animation.webm';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            console.log("Download link created and clicked.");
+        };
+
+        mediaRecorder.start(100); // Request data every 100ms
+        console.log("MediaRecorder started.");
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+            console.log("MediaRecorder stopped.");
+            log.push({event: 'stopRecording', timestamp: Date.now()});
+        } else {
+            console.log("MediaRecorder is not active or already stopped.");
+            log.push({event: 'mediaRecorderNotActive', timestamp: Date.now()});
         }
     }
 
-    addWord();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        const commentText = document.getElementById('comment1');
-        commentText.style.cssText = 'opacity: 1;';
-        animateText(commentText);
-    }, 1000);
+        // Start recording
+        startRecording();
 
-    setTimeout(() => {
-        const body = document.body;
-        body.style.cssText = 'opacity: 1;';
+        // Start animation
+        const chunks = splitText(comment, wordsPerChunk);
+        const cssProperties = getCSSProperties(canvas, ['font', 'line-height']);
+        ctx.font = cssProperties.font; // Keep the original font size
+        const lineHeight = cssProperties['line-height'];
+        console.log("Starting animation...");
+        log.push({event: 'startAnimation', timestamp: Date.now()});
+        animateText(chunks, duration, lineHeight);
     }, 1000);
 });
