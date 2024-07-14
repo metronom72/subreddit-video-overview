@@ -1,9 +1,9 @@
 function setupCanvas(canvas, ctx) {
     const scaleFactor = 2;
     canvas.width = 712 * scaleFactor;
-    canvas.height = 200 * scaleFactor; // Adjust height as needed
+    canvas.height = 400 * scaleFactor; // Adjust height as needed
     canvas.style.width = '712px';
-    canvas.style.height = '200px';
+    canvas.style.height = '400px';
 
     // Scale the context
     ctx.scale(scaleFactor, scaleFactor);

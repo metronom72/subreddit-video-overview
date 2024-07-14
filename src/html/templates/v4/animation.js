@@ -1,44 +1,13 @@
-function drawText(ctx, chunks, opacities, lineHeight) {
-    const canvas = ctx.canvas;
-    ctx.clearRect(0, 0, canvas.width / 2, canvas.height / 2);
-    ctx.fillStyle = '#fff'; // White background
-    ctx.fillRect(0, 0, canvas.width / 2, canvas.height / 2);
-
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = '#000';
-
-    let x = 0;
-    let y = 0;
-    const maxWidth = canvas.width / 2;
-
-    chunks.forEach((text, index) => {
-        ctx.globalAlpha = opacities[index];
-        const metrics = ctx.measureText(text);
-        const textWidth = metrics.width;
-
-        if (x + textWidth > maxWidth) {
-            x = 0;
-            y += parseFloat(lineHeight);
-        }
-
-        ctx.fillText(text, x, y);
-        x += textWidth + 10; // Adding 10 pixels space between chunks
-    });
-
-    ctx.globalAlpha = 1; // Reset globalAlpha to default
-}
-
-function animateText(ctx, chunks, duration, lineHeight, stopRecording) {
-    const chunkDuration = duration / chunks.length;
+function animateText(ctx, commentChunks, duration, lineHeight, stopRecording) {
+    const chunkDuration = duration / commentChunks.length;
     let startTime = null;
-    let opacities = chunks.map(() => 0);
+    let opacities = commentChunks.map(() => 0);
 
     function animate(timestamp) {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
 
-        chunks.forEach((_, index) => {
+        commentChunks.forEach((_, index) => {
             const delay = index * (chunkDuration / 2);
             if (elapsed > delay) {
                 const fadeElapsed = elapsed - delay;
@@ -50,7 +19,7 @@ function animateText(ctx, chunks, duration, lineHeight, stopRecording) {
             }
         });
 
-        drawText(ctx, chunks, opacities, lineHeight);
+        drawComment(ctx, '{{ author }}', '12 days ago', '{{ votes }}', commentChunks, opacities, lineHeight);
 
         if (elapsed < duration) {
             requestAnimationFrame(animate);
