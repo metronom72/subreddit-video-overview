@@ -14,11 +14,6 @@ body {
 
 .comment-section {
     width: 60%;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
 }
 
 .comment {

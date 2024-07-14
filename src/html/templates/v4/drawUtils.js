@@ -44,7 +44,7 @@ function drawCommentText(ctx, commentChunks, opacities, lineHeight, startX, star
         }
 
         ctx.fillText(text, x, y);
-        x += textWidth + 10; // Adding 10 pixels space between chunks
+        x += textWidth + 6; // Adding 10 pixels space between chunks
     });
 
     ctx.globalAlpha = 1; // Reset globalAlpha to default
