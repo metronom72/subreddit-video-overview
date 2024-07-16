@@ -3,6 +3,7 @@ function drawSvgPath(ctx, pathData, x, y, scale = 1) {
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(scale, scale);
+    ctx.fillStyle = 'gray';
     ctx.fill(path);
     ctx.restore();
 }

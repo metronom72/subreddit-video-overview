@@ -39,7 +39,6 @@ function startAnimation(canvas, ctx) {
     startRecording(canvas);
 
     setTimeout(() => {
-        console.log(createTextChunks(comment.repeat(40), canvas, ctx))
         const chunks = createTextChunks(comment.repeat(40), canvas, ctx).map(({text}) => splitText(text, wordsPerChunk));
         const cssProperties = getCSSProperties(canvas, ['font', 'line-height']);
         ctx.font = cssProperties.font; // Keep the original font size
@@ -47,7 +46,7 @@ function startAnimation(canvas, ctx) {
         const totalLength = chunks.flat().length
         const durationsDistribution = chunks.map((chunk) => chunk.length / totalLength * duration)
         chunks.forEach((chunk, index) => {
-            const pastDuration = durationsDistribution.slice(0, index + 1).reduce((total, chunkDuration) => {
+            const pastDuration = durationsDistribution.slice(0, index).reduce((total, chunkDuration) => {
                 total += chunkDuration
                 return total;
             }, 0)

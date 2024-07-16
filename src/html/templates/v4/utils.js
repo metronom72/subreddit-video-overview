@@ -28,8 +28,6 @@ function createTextChunks(text, canvas, context) {
     const originalWidth = (756 - 120) / 2;
     const originalHeight = (400 - 120) / 2;
 
-    console.log(originalWidth, originalHeight)
-
     context.clearRect(0, 0, originalWidth, originalHeight);
 
     let x = 0;
