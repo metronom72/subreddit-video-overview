@@ -1,4 +1,4 @@
-function animateText(ctx, commentChunks, duration, lineHeight, stopRecording) {
+function animateText(ctx, commentChunks, duration, lineHeight, stopRecording = null) {
     const chunkDuration = duration / commentChunks.length;
     let startTime = null;
     let opacities = commentChunks.map(() => 0);
@@ -8,11 +8,11 @@ function animateText(ctx, commentChunks, duration, lineHeight, stopRecording) {
         const elapsed = timestamp - startTime;
 
         commentChunks.forEach((_, index) => {
-            const delay = index * (chunkDuration / 2);
+            const delay = index * (chunkDuration);
             if (elapsed > delay) {
                 const fadeElapsed = elapsed - delay;
-                if (fadeElapsed < chunkDuration / 2) {
-                    opacities[index] = fadeElapsed / (chunkDuration / 2);
+                if (fadeElapsed < chunkDuration) {
+                    opacities[index] = fadeElapsed / (chunkDuration);
                 } else {
                     opacities[index] = 1;
                 }
@@ -23,7 +23,7 @@ function animateText(ctx, commentChunks, duration, lineHeight, stopRecording) {
 
         if (elapsed < duration) {
             requestAnimationFrame(animate);
-        } else {
+        } else if (stopRecording instanceof Function) {
             stopRecording();
         }
     }
@@ -32,17 +32,28 @@ function animateText(ctx, commentChunks, duration, lineHeight, stopRecording) {
 }
 
 function startAnimation(canvas, ctx) {
-    const comment = "This comment should be split into chunks, as sentences or chunks of 5 words maximum. These chunks should appear one after another within a box 712px wide with a comfortable fade effect. This comment should appear in a fixed duration, 10 seconds by default.";
-    const duration = 10 * 1000; // 10 seconds in milliseconds
+    const comment = "This comment should be split into chunks, as sentences or chunks of 5 words maximum. These chunks should appear one after another within a box 712px wide with a comfortable fade effect. This comment should appear in a fixed duration, 10 seconds by default. ";
+    const duration = 30 * 1000; // 10 seconds in milliseconds
     const wordsPerChunk = 5;
 
     startRecording(canvas);
 
     setTimeout(() => {
-        const chunks = splitText(comment, wordsPerChunk);
+        console.log(createTextChunks(comment.repeat(40), canvas, ctx))
+        const chunks = createTextChunks(comment.repeat(40), canvas, ctx).map(({text}) => splitText(text, wordsPerChunk));
         const cssProperties = getCSSProperties(canvas, ['font', 'line-height']);
         ctx.font = cssProperties.font; // Keep the original font size
         const lineHeight = cssProperties['line-height'];
-        animateText(ctx, chunks, duration, lineHeight, stopRecording);
+        const totalLength = chunks.flat().length
+        const durationsDistribution = chunks.map((chunk) => chunk.length / totalLength * duration)
+        chunks.forEach((chunk, index) => {
+            const pastDuration = durationsDistribution.slice(0, index + 1).reduce((total, chunkDuration) => {
+                total += chunkDuration
+                return total;
+            }, 0)
+            setTimeout(() => {
+                animateText(ctx, chunk, durationsDistribution[index], lineHeight, index === chunks.length - 1 ? stopRecording : null);
+            }, pastDuration)
+        })
     }, 500); // Adjust this delay if necessary to ensure recording starts before animation
 }
