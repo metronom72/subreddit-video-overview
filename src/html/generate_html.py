@@ -1,14 +1,47 @@
+import json
 import os
 import re
+import shutil
 import time
-import json
-from jinja2 import Template
+
 import pandas as pd
+from jinja2 import Template
 
 
 def split_by_newlines(text):
     """Splits the input string by any amount of new lines."""
     return [line.strip() for line in re.split(r'\n+', text.replace('\r', '').strip())]
+
+
+def copy_css_js_files(version, destination_dir):
+    """
+    Copy CSS and JS files from source directory to destination directory.
+
+    :param version: The version of the files to copy.
+    :param destination_dir: The directory where the files will be copied to.
+    :return: None
+    """
+    # Define the source and destination directories
+    source_dir = f'src/html/templates/{version}/'
+
+    # Ensure the destination directory exists
+    os.makedirs(destination_dir, exist_ok=True)
+
+    # Iterate through files in the source directory
+    for root, dirs, files in os.walk(source_dir):
+        for file in files:
+            # Check if the file has a .css or .js extension
+            if file.endswith(('.css', '.js')):
+                # Construct full file paths
+                source_file = os.path.join(root, file)
+                # Ensure subdirectories in the destination path are created
+                relative_path = os.path.relpath(root, source_dir)
+                destination_subdir = os.path.join(destination_dir, relative_path)
+                os.makedirs(destination_subdir, exist_ok=True)
+                destination_file = os.path.join(destination_subdir, file)
+                # Copy file from source to destination
+                shutil.copy(source_file, destination_file)
+                print(f"Copied: {source_file} to {destination_file}")
 
 
 def read_file(file_path):
@@ -70,10 +103,20 @@ def write_output_file(output_file, content):
 
 def generate_html(row, output_file, version='v1'):
     split_comments = version not in ['v1', 'v2']
+    combine_assets = version not in ['v4']
+
+    css_file = None
+    css_content = None
+
+    js_file = None
+    js_content = None
 
     template_file = f'src/html/templates/{version}/template.html'
-    css_file = f'src/html/templates/{version}/style.css'
-    js_file = f'src/html/templates/{version}/script.js'
+    if combine_assets:
+        css_file = f'src/html/templates/{version}/style.css'
+        js_file = f'src/html/templates/{version}/script.js'
+    else:
+        copy_css_js_files(version, os.path.dirname(output_file))
 
     # Ensure row is a dictionary and JSON serializable
     if isinstance(row, pd.Series):
@@ -93,19 +136,28 @@ def generate_html(row, output_file, version='v1'):
     template_content, template_metadata = get_metadata(template_file)
     metadata['template'] = template_metadata
 
-    # Get CSS metadata
-    css_content, css_metadata = get_metadata(css_file)
-    metadata['css'] = css_metadata
+    if combine_assets:
+        if css_file:
+            # Get CSS metadata
+            css_content, css_metadata = get_metadata(css_file)
+            metadata['css'] = css_metadata
 
-    # Get JavaScript metadata
-    js_content, js_metadata = get_metadata(js_file)
-    metadata['js'] = js_metadata
+        if js_file:
+            # Get JavaScript metadata
+            js_content, js_metadata = get_metadata(js_file)
+            metadata['js'] = js_metadata
 
-    # Render HTML content
-    html_content, generation_time = render_html(row,
-                                                template_content,
-                                                css_content,
-                                                js_content)
+        # Render HTML content
+        html_content, generation_time = render_html(row,
+                                                    template_content,
+                                                    css_content or '',
+                                                    js_content or '')
+    else:
+        # Render HTML content
+        html_content, generation_time = render_html(row,
+                                                    template_content,
+                                                    '',
+                                                    '')
     metadata['html'] = {
         'generation_time': generation_time
     }

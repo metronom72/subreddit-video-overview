@@ -123,26 +123,18 @@ def copy_files_by_list(file_list, target_dir, prefix=""):
 
 def record_mp4_task(index, row, output_dir, version, extension):
     """
-    :param index: The unique identifier for the task.
-    :param row: The row of data containing the task details.
+    :param index: The index of the comment.
+    :param row: The row containing the comment data.
     :param output_dir: The directory where the output files will be saved.
-    :return None
+    :param version: The version of the comment.
+    :param extension: The file extension for the mp4 file.
 
-    This method is used to record a task as an MP4 video. It takes four parameters: `index`, `row`, `template`,
-    and `output_dir`. The `index` parameter is the unique identifier for the task. It is used to generate the
-    filenames for the HTML, MP4, MP3, and with-audio MP4 files. The `row` parameter is the row of data containing the
-    task details. It is used to populate the template with the appropriate values. The `template` parameter is the
-    template used to render the HTML content. It should be a valid template object that supports rendering with the
-    `render` method. The `output_dir` parameter is the directory where the output files will be saved. The HTML, MP4,
-    MP3, and with-audio MP4 files will be created in this directory.
+    :return: None
 
-    This method performs the following steps: 1. Renders the HTML content using the template and the values from the
-    `row` parameter. 2. Saves the rendered HTML content to a file with a filename generated based on the `index`
-    parameter. 3. Calls the `record_mp4` function to convert the HTML file to an MP4 video, using the provided
-    `html_file` and `mp4_file` filenames and the duration of the corresponding MP3 file. 4. Checks if the
-    corresponding MP3 file exists. 5. If the MP3 file exists, calls the `combine_video_audio` function to combine the
-    MP4 video and MP3 audio files, using the provided `mp4_file` and `mp3_file` filenames, and saves the result to a
-    new file with a filename generated based on the `index` parameter.
+    This method records a comment as an mp4 task. It generates an HTML file using the comment data, then converts the HTML file to an mp4 file. It also retrieves the length of the corresponding mp3 file.
+
+    Example Usage:
+    record_mp4_task(0, comment_data, "/output", "1.0", "mp4")
     """
     html_file = os.path.join(output_dir, f'comment_{index}.html')
     mp4_file = os.path.join(output_dir, f'comment_{index}.{extension}')

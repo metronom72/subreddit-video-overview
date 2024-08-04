@@ -19,7 +19,7 @@ function animateText(ctx, commentChunks, duration, lineHeight, stopRecording = n
             }
         });
 
-        drawComment(ctx, '{{ author }}', '12 days ago', '{{ votes }}', commentChunks, opacities, lineHeight);
+        drawComment(ctx, window.author || '{{ author }}', '12 days ago', window.votes || '{{ votes }}', commentChunks, opacities, lineHeight);
 
         if (elapsed < duration) {
             requestAnimationFrame(animate);
