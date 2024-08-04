@@ -1,6 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 
+from src.audio_generation.audio_collection import collect_audio_files
 from src.cli.configuration import get_configuration
 from src.cli.converters import convert_data_to_dataframe
 from src.cli.inputs import generate_audio_files, record_videos, combine_video_audio_task, get_comments, \
@@ -20,10 +21,13 @@ def main():
     extension = configuration['video_generation']['extension']
     tts_library = configuration['audio_generation']['tts_library']
     version = configuration['html_generation']['version']
+    audio_collection_source = configuration['audio_collection']['source_folder']
+
     html_generation_enabled = configuration['html_generation']['enabled']
     video_generation_enabled = configuration['video_generation']['enabled']
     audio_generation_enabled = configuration['audio_generation']['enabled']
     combining_enabled = configuration['combining']['enabled']
+    audio_collection_enabled = configuration['audio_collection']['enabled']
 
     combined_mp4 = None
     if combining_enabled:
@@ -32,6 +36,8 @@ def main():
     # Generate audio files for comments
     if audio_generation_enabled:
         generate_audio_files(convert_data_to_dataframe(data), tts_library, output_dir)
+    elif audio_collection_enabled:
+        collect_audio_files(audio_collection_source, output_dir)
 
     # Record videos for comments
     if video_generation_enabled and html_generation_enabled:

@@ -12,6 +12,10 @@ version = 'v4'
 enabled = false
 tts_library = 'tts'
 
+[audio_collection]
+enabled = false
+source_folder = ''
+
 [video_generation]
 enabled = false
 extension = 'mp4'
