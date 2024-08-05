@@ -16,7 +16,9 @@ def main():
 
     configuration = get_configuration('./config.toml', output_dir)
 
-    data = get_comments(configuration)
+    data = get_comments(configuration)[:configuration['data_source']['comments_qty']]
+
+    print(data[:10])
 
     extension = configuration['video_generation']['extension']
     tts_library = configuration['audio_generation']['tts_library']

@@ -33,12 +33,19 @@ def list_folders(directory):
     return sorted([f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))])
 
 
-def fetch_comments():
-    post_url = input('Enter the Reddit post URL (required): ')
-    limit = int(input('Enter the number of top comments to fetch (required): '))
+def fetch_comments(configuration):
+    if configuration['url']:
+        post_url = configuration['url']
+    else:
+        post_url = input('Enter the Reddit post URL (required): ')
+
+    if configuration['comments_qty']:
+        limit = configuration['comments_qty']
+    else:
+        limit = int(input('Enter the number of top comments to fetch (required): '))
 
     # Fetch top comments from the subreddit post
-    fetch_subreddit(post_url, limit)
+    fetch_subreddit(post_url, limit, configuration['default_name'])
 
     # List CSV files in the samples directory
     samples_dir = 'samples'
@@ -55,11 +62,14 @@ def fetch_comments():
 
     # Prompt for CSV file selection
     csv_file_index = None
-    while csv_file_index not in range(1, len(csv_files) + 1):
-        try:
-            csv_file_index = int(input(f"Enter the number corresponding to the CSV file (1-{len(csv_files)}): "))
-        except ValueError:
-            pass
+    if configuration['default_name']:
+        csv_file_index = len(csv_files)
+    else:
+        while csv_file_index not in range(1, len(csv_files) + 1):
+            try:
+                csv_file_index = int(input(f"Enter the number corresponding to the CSV file (1-{len(csv_files)}): "))
+            except ValueError:
+                pass
 
     csv_file = os.path.join(samples_dir, csv_files[csv_file_index - 1])
 
@@ -122,7 +132,7 @@ def get_comments(configuration):
         # Default comment data
         data = pd.read_csv('samples/comments.csv')
     else:
-        data = fetch_comments()
+        data = fetch_comments(configuration['data_source'])
         if data is None:
             return None, use_default
 

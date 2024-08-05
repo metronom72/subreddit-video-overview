@@ -1,8 +1,9 @@
 [data_source]
 source = 'reddit'
-url = ''
+url = 'https://www.reddit.com/r/AskReddit/comments/1ejq3hs/snap_your_fingers_and_make_anyone_alive_president/'
 comments_qty = 10
-samples = true
+samples = false
+default_name = true
 
 [html_generation]
 enabled = true
